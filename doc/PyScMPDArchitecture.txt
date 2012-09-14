@@ -79,3 +79,18 @@ Resource are self aggregating:
                                            +-------+
 
 
+Thus, a browsable music hrarchie could be modeled. E.g. for soundcloud.com:
+
+Resource (root)
+|
++- Provider (soundcloud provider)
+   |
+   +- Directory (soundcloud user, e.g. "GRiZ")
+      |
+      +- Directory (souncloud user set (playlist), e.g. "Full Album")
+      |  |
+      |  +- File (soundcloud track, e.g. "Rock N Roll")
+      |  +- File (soundcloud track, e.g. "Too much trolling")
+      |
+      +- File (soundcloud track, e.g. "No way")
+
