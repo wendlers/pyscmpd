@@ -62,12 +62,6 @@ Everything related to songs and managing songs is called a resource. The followi
                                +-----------+ +------+
                                | Directory | | File |
                                +-----------+ +------+
-                                    /|\        
-                                     | 
-                               +----------+
-                               | Provider |
-                               +----------+
-
 
 Resource are self aggregating: 
 
@@ -79,11 +73,11 @@ Resource are self aggregating:
                                            +-------+
 
 
-Thus, a browsable music hrarchie could be modeled. E.g. for soundcloud.com:
+Thus, a browsable music hiarchie could be modeled. E.g. for soundcloud.com:
 
 Resource (root)
 |
-+- Provider (soundcloud provider)
++- Directoy (soundcloud provider)
    |
    +- Directory (soundcloud user, e.g. "GRiZ")
       |
