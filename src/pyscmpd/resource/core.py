@@ -34,22 +34,22 @@ class Resource:
 	id 			= None
 	location	= None
 	meta		= None 
+	name		= None
 
 	def __init__(self, resourceId, resourceLocation, name = "UNKNOWN"):
 
 		self.meta 	  		= {}
 		self.id 	  		= resourceId
 		self.location 		= resourceLocation
-		self.meta["name"] 	= name
+		self.name 			= name
 
 	def setMeta(self, meta):
 
-		name = self.meta.get("name", "UNKNOWN")
-
 		self.meta = meta
 
-		if not self.meta.has_key("name"):
-			self.meta["name"] = name 
+	def getName(self):
+
+		return self.name
 
 	def getMeta(self, key = None):
 	
@@ -73,7 +73,7 @@ class Resource:
 	def __str__(self):
 
 		return ("%s [id=%s; location=%s; type=%d, meta=%s]" % 
-			(self.meta["name"], self.id, self.location, self.getType(), self.meta))
+			(self.name, self.id, self.location, self.getType(), self.meta))
 
 
 class DirectoryResource(Resource):
@@ -101,7 +101,7 @@ class DirectoryResource(Resource):
 	def getChildByName(self, name):
 
 		for c in self.children:
-			if c.getMeta("name") == name: 
+			if c.getName() == name: 
 				return c
 
 		return None
@@ -125,7 +125,7 @@ class DirectoryResource(Resource):
 	def __str__(self):
 
 		return ("%s [id=%s; location=%s; type=%d, meta=%s, #children=%d]" % 
-			(self.meta["name"], self.id, self.location, self.getType(), self.meta, len(self.children)))
+			(self.name, self.id, self.location, self.getType(), self.meta, len(self.children)))
 
 
 class FileResource(Resource):
@@ -138,12 +138,12 @@ class FileResource(Resource):
 
 		return self.TYPE_FILE
 
-	def getStreamLocation(self):
+	def getStreamUri(self):
 		
-		return self.location
+		return "file://" + self.location
 
 	def __str__(self):
 
 		return ("%s [id=%s; location=%s; type=%d, meta=%s]" % 
-			(self.meta["name"], self.id, self.location, self.getType(), self.meta))
+			(self.name, self.id, self.location, self.getType(), self.meta))
 

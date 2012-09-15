@@ -48,6 +48,7 @@ class User(core.DirectoryResource):
 
 		core.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
+		# TODO: do not load in advance, but use lazy loading when first call to "getAllChildren" is made
 		try:
 			logging.debug("Trying to get tracks for user [%s]" % name)
 			tracks = ResourceProvider.sc.get(self.location + "/tracks")
@@ -56,19 +57,20 @@ class User(core.DirectoryResource):
 				tr = Track(track.id, track.stream_url, track.title)
 				tr.setMeta({"Artist" : name, "Title" : track.title})
 				self.addChild(tr)
+				logging.debug("Added tracki to user [%s]: %s" % (self.getName(), tr.__str__()))
 
 		except Exception as e:
-			logging.warn("Unable to retrive tracks for [%s]" % self.getMeta("name"))
+			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
-		logging.debug("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getMeta("name")))
+		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
 
 
 class Track(core.FileResource):
 
-	def getStreamLocation(self):
+	def getStreamUri(self):
 		
-		stream_url = cResourceProvider.sc.get(self.location, allow_redirects=False)
-		logging.debig("Stream url for URI %s is %s" % (self.location, stream_url.location))
+		stream_url = ResourceProvider.sc.get(self.location, allow_redirects=False)
+		logging.debug("Stream url for URI %s is %s" % (self.location, stream_url.location))
 		return stream_url.location
 
 

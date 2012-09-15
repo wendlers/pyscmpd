@@ -125,12 +125,15 @@ class LsInfo(mpdserver.LsInfo):
 			r = r.getAllChildren()
 
 		for e in r:
+
+			logging.debug("LsInfo sending item: %s" % e.__str__())
+
 			if e.getType() == 1:
 				t = "directory"
 			else:
 				t = "file"
  
-			i.append((t, e.getMeta("name")))	
+			i.append((t, e.getName()))	
 
 		return i 
 
