@@ -46,31 +46,36 @@ class LsInfo(mpdserver.LsInfo):
 	def items(self):
 
 		i = []
+		path = ""
 
 		if self.directory == None:
 			r = scroot.getAllChildren()
-			LsInfo.currdir = scroot 
 		else:
 			r = scroot.getChildByName(self.directory)
+			path = r.getName()
 
 			if r == None:
 				return i	
-
-			LsInfo.currdir = r
-			logging.info("Setting current dir to: %s" % LsInfo.currdir.__str__())
 
 			r = r.getAllChildren()
 
 		for e in r:
 
-			logging.debug("LsInfo sending item: %s" % e.__str__())
+			logging.debug("LsInfo sending item: %s/%s" % (path, e.__str__()))
 
 			if e.getType() == 1:
 				t = "directory"
 			else:
 				t = "file"
  
-			i.append((t, e.getName()))
+			if path == "":
+				i.append((t, e.getName()))
+			else: 
+				i.append((t, path + "/" + e.getName()))
+				if e.getType() == 2:
+					i.append(("Artist", e.getMeta("Artist")))
+					i.append(("Title", e.getMeta("Title")))
+					i.append(("Duration", e.getMeta("Duration")))
 
 		return i 
 
@@ -78,20 +83,29 @@ class Add(mpdserver.Add):
 
 	def handle_args(self, song):
 
-		logging.info("Current dir is: %s" % LsInfo.currdir.__str__())
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		if LsInfo.currdir == None:
-			logging.error("Change to directory first")
+		(user, sep, track) = song.partition("/")
+
+		if track == "":
+			logging.error("Could not extract track from [%s]", song)
+			return	
+
+		u = scroot.getChildByName(user)
+
+		if user == None:
+			logging.error("Could not find directory for [%s]", user)
 			return
-		
-		t = LsInfo.currdir.getChildByName(song)
+
+		t = u.getChildByName(track)
 
 		if t == None:
-			logging.error("Track [%s] not found in directory [%s]" % (song, currdir.getName()))
+			logging.error("Track [%s] not found in directory [%s]" % (track, user))
 			return
 
 		player.addChild(t)
+		
+		logging.info("Successfully added song: %s" % t.__str__())
 
 if __name__ == "__main__":
 	try:

@@ -36,15 +36,16 @@ class Root(core.DirectoryResource):
 
 			try:
 				user = ResourceProvider.sc.get(uri)
-				self.addChild(User(user.id, user.uri, user.username))
-				logging.debug("successfully retrieved data for URI %s: id=%d; name=%s" %  (uri, user.id, user.username))
+				u = User(user.id, user.uri, user.permalink, user.username)				
+				self.addChild(u)
+				logging.debug("successfully retrieved data for URI %s: id=%d; name=%s" % (uri, user.id, user.permalink))
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
 
 class User(core.DirectoryResource):
 
-	def __init__(self, resourceId, resourceLocation, name = "UNKNOWN"):
+	def __init__(self, resourceId, resourceLocation, name, artist):
 
 		core.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
@@ -54,8 +55,8 @@ class User(core.DirectoryResource):
 			tracks = ResourceProvider.sc.get(self.location + "/tracks")
 
 			for track in tracks:
-				tr = Track(track.id, track.stream_url, track.title)
-				tr.setMeta({"Artist" : name, "Title" : track.title})
+				tr = Track(track.id, track.stream_url, track.permalink)
+				tr.setMeta({"Artist" : artist, "Title" : track.title, "Duration" : track.duration})
 				self.addChild(tr)
 				logging.debug("Added tracki to user [%s]: %s" % (self.getName(), tr.__str__()))
 
