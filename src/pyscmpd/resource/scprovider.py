@@ -37,6 +37,7 @@ class Root(core.DirectoryResource):
 			try:
 				user = ResourceProvider.sc.get(uri)
 				u = User(user.id, user.uri, user.permalink, user.username)				
+				u.setMeta({"directory" : user.permalink})		
 				self.addChild(u)
 				logging.debug("successfully retrieved data for URI %s: id=%d; name=%s" % (uri, user.id, user.permalink))
 			except Exception as e:
@@ -56,7 +57,11 @@ class User(core.DirectoryResource):
 
 			for track in tracks:
 				tr = Track(track.id, track.stream_url, track.permalink)
-				tr.setMeta({"Artist" : artist, "Title" : track.title, "Duration" : track.duration})
+				tr.setMeta({
+					"file" : name + "/" + track.permalink,
+					"Artist" : artist, 
+					"Title" : track.title, 
+					"Time" : track.duration})
 				self.addChild(tr)
 				logging.debug("Added tracki to user [%s]: %s" % (self.getName(), tr.__str__()))
 

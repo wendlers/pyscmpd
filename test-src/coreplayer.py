@@ -1,10 +1,12 @@
 import logging
 import mpdserver
 import soundcloud
+import pickle
 
 import pyscmpd.resource.scprovider as provider 
 import pyscmpd.player.core as coreplayer 
 
+mpd	   = None
 player = None
 scroot = None
 
@@ -69,13 +71,13 @@ class LsInfo(mpdserver.LsInfo):
 				t = "file"
  
 			if path == "":
-				i.append((t, e.getName()))
+				i.append((t, e.getMeta("directory")))
 			else: 
-				i.append((t, path + "/" + e.getName()))
+				i.append((t, e.getMeta("file")))
 				if e.getType() == 2:
 					i.append(("Artist", e.getMeta("Artist")))
 					i.append(("Title", e.getMeta("Title")))
-					i.append(("Duration", e.getMeta("Duration")))
+					i.append(("Time", e.getMeta("Time")))
 
 		return i 
 
@@ -107,6 +109,64 @@ class Add(mpdserver.Add):
 		
 		logging.info("Successfully added song: %s" % t.__str__())
 
+class AddId(mpdserver.Add):
+
+	def handle_args(self, song):
+
+		logging.info("Adding song [%s] to playlist" % song) 
+
+		(user, sep, track) = song.partition("/")
+
+		if track == "":
+			logging.error("Could not extract track from [%s]", song)
+			return	
+
+		u = scroot.getChildByName(user)
+
+		if user == None:
+			logging.error("Could not find directory for [%s]", user)
+			return
+
+		t = u.getChildByName(track)
+
+		if t == None:
+			logging.error("Track [%s] not found in directory [%s]" % (track, user))
+			return
+
+		player.addChild(t)
+		
+		logging.info("Successfully added song: %s" % t.__str__())
+
+
+class MpdPlaylist(mpdserver.MpdPlaylist):
+
+    def songIdToPosition(self, songId):
+
+		logging.info("Request to convert Id [%d] to position" % songId)
+		return 0
+
+    def handlePlaylist(self):
+
+		pl = []
+
+		logging.info("Playlist requested")	
+
+		for t in player.getAllChildren():
+
+			s = mpdserver.MpdPlaylistSong(
+				artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
+				title = t.getMeta("Title").encode('ASCII', 'ignore'), 
+				file = t.getMeta("file").encode('ASCII', 'ignore'),
+				songId = t.getId())
+
+			pl.append(s)
+
+		logging.info("Returning playlist: %s" % pl)
+		return pl 
+
+    def move(self, fromPos, toPos):
+		pass
+
 if __name__ == "__main__":
 	try:
 
@@ -122,12 +182,22 @@ if __name__ == "__main__":
 			"/users/maddecent" 				# TODO: this one has unicode / encoding errors
 			]
 
+		'''
 		# connect to soundcloud resources
 		scp 	= provider.ResourceProvider()
 	
-
 		scroot  = scp.getRoot()
-		LsInfo.currdir = scroot
+
+		f = open('scroot.dump', 'wb')
+		pickle.dump(scroot, f)		
+		f.close()
+		'''
+
+		f = open('scroot.dump', 'rb')
+		scroot = pickle.load(f)		
+		f.close()
+		'''
+		'''
 
 		mpd=mpdserver.MpdServerDaemon(9999)
 		mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
@@ -135,9 +205,10 @@ if __name__ == "__main__":
 		mpd.requestHandler.RegisterCommand(Stop)
 		mpd.requestHandler.RegisterCommand(LsInfo)
 		mpd.requestHandler.RegisterCommand(Add)
+		mpd.requestHandler.RegisterCommand(AddId)
 		mpd.requestHandler.RegisterCommand(Clear)
-		mpd.requestHandler.Playlist=mpdserver.MpdPlaylistDummy
-		# mpd.requestHandler.Playlist=MpdPlaylist
+		# mpd.requestHandler.Playlist=mpdserver.MpdPlaylistDummy
+		mpd.requestHandler.Playlist=MpdPlaylist
 
 		while mpd.wait(1) : pass
 
@@ -151,4 +222,5 @@ if __name__ == "__main__":
 
 	finally:
 
-		mpd.quit()
+		if not mpd == None:
+			mpd.quit()
