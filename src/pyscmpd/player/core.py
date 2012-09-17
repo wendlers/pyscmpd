@@ -27,7 +27,8 @@ import pyscmpd.resource.core as core
 
 class GstPlayer(core.DirectoryResource):
 
-	player 		= None 
+	player 			= None 
+	playlistVersion = 0
 	
 	def __init__(self):	
 
@@ -40,6 +41,8 @@ class GstPlayer(core.DirectoryResource):
 		if not child.getType() == core.Resource.TYPE_FILE:
 			logging.error("Only file resources allowed for playlists. Got: %s" % child.__str__())
 			return
+
+		self.playlistVersion = self.playlistVersion + 1
 
 		self.children.append(child)
 
@@ -58,7 +61,19 @@ class GstPlayer(core.DirectoryResource):
 		self.player.set_property('uri', f.getStreamUri())
 		self.player.set_state(gst.STATE_PLAYING)
 
+	def playId(self, fileId):
 
+		p = 0
+
+		for c in self.children:
+			if c.getId() == fileId:
+				self.play(p)
+				return
+
+			p = p + 1
+
+		logging.info("No file with id [%d] in playlist" % fileId)
+		
 	def stop(self):
 
 		self.player.set_state(gst.STATE_NULL)

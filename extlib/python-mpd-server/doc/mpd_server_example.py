@@ -1,0 +1,1 @@
+../examples/mpd_server_example.py

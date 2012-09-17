@@ -1,0 +1,47 @@
+python-mpd-server permits to bind a player to a `MPD server <http://mpd.wikia.com>`_. 
+
+You can control your player with a MPD client such as `Sonata
+<http://sonata.berlios.de/>`_, `Gmpc <http://gmpc.wikia.com/wiki/>`_ or a command line tool `mpc <http://mpd.wikia.com/wiki/Client:Mpc>`_. This module
+defines a server which manages client requests, parses a request and
+generates a respond. A MPD command is a class that you can override.
+
+Current supported features are:
+
+- Playback control (play, stop, next, ...)
+- Manage a playlist (add, move, delete, ...)
+- Store/Load playlists
+- User management via password command
+
+
+Install It
+----------
+Clone git repository ::
+
+      git clone git://git.tuxfamily.org/gitroot/pympdserver/python-mpd-server.git python-mpd-server
+      cd python-mpd-server
+      python setup.py install --user
+
+You can also `browse source code <http://git.tuxfamily.org/pympdserver/python-mpd-server/>`_.
+
+
+Getting Started
+---------------
+Launch a basic mpd server ::
+
+       python examples/mpd_server_example.py
+
+or go http://pympdserver.tuxfamily.org/index.html#how-to-use-it .
+
+Copyright and Licensing
+-----------------------
+All python-mpd-server modules are released under
+the terms of GPL 3. See LICENSE for the full license.
+
+python-mpd-server is Copyright (C) 2011-2012 kedals0@gmail.com
+
+The GPL is Copyright (C) Free Software Foundation.
+
+Contact
+-------
+Project Page: http://pympdserver.tuxfamily.org/
+

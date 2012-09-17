@@ -16,6 +16,15 @@ class Play(mpdserver.Play):
 
 		player.play(songPos)
 
+class PlayId(mpdserver.PlayId):
+
+	def handle_args(self, songId=0):
+
+		logging.debug("Playid %d" % songId)
+
+		player.playId(songId)
+
+
 class Stop(mpdserver.Command):
 
 	def handle_args(self):
@@ -77,7 +86,7 @@ class LsInfo(mpdserver.LsInfo):
 				if e.getType() == 2:
 					i.append(("Artist", e.getMeta("Artist")))
 					i.append(("Title", e.getMeta("Title")))
-					i.append(("Time", e.getMeta("Time")))
+					i.append(("Time", int(e.getMeta("Time") % 1000)))
 
 		return i 
 
@@ -109,7 +118,9 @@ class Add(mpdserver.Add):
 		
 		logging.info("Successfully added song: %s" % t.__str__())
 
-class AddId(mpdserver.Add):
+class AddId(mpdserver.AddId):
+
+	uniqueId = 0
 
 	def handle_args(self, song):
 
@@ -137,6 +148,12 @@ class AddId(mpdserver.Add):
 		
 		logging.info("Successfully added song: %s" % t.__str__())
 
+	def items(self):
+
+		self.uniqueId = self.uniqueId + 1
+
+		return [("id", self.uniqueId)]
+
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
 
@@ -147,22 +164,28 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 
     def handlePlaylist(self):
 
-		pl = []
+		pl 	= []
+		i 	= 1
+		c 	= player.getAllChildren()
+		l 	= len(c)
 
-		logging.info("Playlist requested")	
-
-		for t in player.getAllChildren():
+		for t in c: 
 
 			s = mpdserver.MpdPlaylistSong(
 				artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
 				title = t.getMeta("Title").encode('ASCII', 'ignore'), 
 				file = t.getMeta("file").encode('ASCII', 'ignore'),
+				track = "%d/%d" % (i, l),
+				time = "%d" % (t.getMeta("Time") / 1000),
 				songId = t.getId())
 
 			pl.append(s)
 
-		logging.info("Returning playlist: %s" % pl)
+		# logging.info("Returning playlist: %s" % pl)
 		return pl 
+
+    def version(self):
+		return player.playlistVersion 
 
     def move(self, fromPos, toPos):
 		pass
@@ -183,6 +206,7 @@ if __name__ == "__main__":
 			]
 
 		'''
+		'''
 		# connect to soundcloud resources
 		scp 	= provider.ResourceProvider()
 	
@@ -191,17 +215,17 @@ if __name__ == "__main__":
 		f = open('scroot.dump', 'wb')
 		pickle.dump(scroot, f)		
 		f.close()
-		'''
 
+		'''
 		f = open('scroot.dump', 'rb')
 		scroot = pickle.load(f)		
 		f.close()
-		'''
 		'''
 
 		mpd=mpdserver.MpdServerDaemon(9999)
 		mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
 		mpd.requestHandler.RegisterCommand(Play)
+		mpd.requestHandler.RegisterCommand(PlayId)
 		mpd.requestHandler.RegisterCommand(Stop)
 		mpd.requestHandler.RegisterCommand(LsInfo)
 		mpd.requestHandler.RegisterCommand(Add)

@@ -1,0 +1,9 @@
+[Plugin]
+Loader=python
+Module=totem-mpdserver
+IAge=1
+Name=MPD server
+Description=Control Totem with MPD clients
+Authors=dal
+Copyright=Copyright © 2012 kedals0@gmail.com
+Website=http://pympdserver.tuxfamily.org/

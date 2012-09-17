@@ -1,0 +1,8 @@
+A really basic totem plugin which permit to control totem with MPD clients.
+
+INSTALLATION
+------------
+1) Install pympdserver package
+   See http://pympdserver.tuxfamily.org/#install-it
+2) To use it, copy this directory to ~/.local/share/totem/plugins and
+   activate it in Totem plugins menu.
