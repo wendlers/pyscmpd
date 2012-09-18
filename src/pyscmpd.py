@@ -20,3 +20,41 @@
 '''
 This file is part of the pyscmpd project.
 '''
+
+import logging
+
+import pyscmpd.scmpd as scmpd
+import pyscmpd.gstplayer as gstplayer 
+
+mpd = None
+
+try:
+
+	# logging.basicConfig(level=logging.DEBUG)
+	logging.basicConfig(level=logging.INFO)
+
+	player = gstplayer.GstPlayer() 
+
+	# TODO: do not hardcode root :-)
+	ROOT_USERS =  [ 
+		"/users/griz", 
+		"/users/betamaxx",				# TODO: this one has unicode / encoding errors 
+		"/users/freudeamtanzen", 
+		"/users/barelylegit", 
+		"/users/maddecent" 				# TODO: this one has unicode / encoding errors
+		]
+
+	mpd = scmpd.ScMpdServerDaemon(ROOT_USERS, player)
+
+except KeyboardInterrupt:
+
+	logging.info("Stopping SoundCloud MPD server")
+
+except Exception as e:
+
+	logging.error("Exception occurred: %s" % `e`)
+
+finally:
+
+	if not mpd == None:
+		mpd.quit()

@@ -23,22 +23,22 @@ This file is part of the pyscmpd project.
 
 import logging
 import gst
-import pyscmpd.resource.core as core
+import pyscmpd.resource as resource
 
-class GstPlayer(core.DirectoryResource):
+class GstPlayer(resource.DirectoryResource):
 
 	player 			= None 
 	playlistVersion = 0
 	
 	def __init__(self):	
 
-		core.DirectoryResource.__init__(self, 0, None, "Current Playlist")
+		resource.DirectoryResource.__init__(self, 0, None, "Current Playlist")
 
 		self.player = gst.element_factory_make("playbin", "player")
 
 	def addChild(self, child):
 
-		if not child.getType() == core.Resource.TYPE_FILE:
+		if not child.getType() == resource.Resource.TYPE_FILE:
 			logging.error("Only file resources allowed for playlists. Got: %s" % child.__str__())
 			return
 
@@ -50,7 +50,8 @@ class GstPlayer(core.DirectoryResource):
 	def play(self, filePos=0):
 
 		if filePos > len(self.children): 
-			logging.error("Invalid filePos (%d) given. Only %d files in current playlist." % (filePos, len(self.children)))
+			logging.error("Invalid filePos (%d) given. Only %d files in current playlist." % 
+				(filePos, len(self.children)))
 			return 
 
 		f = self.children[filePos]

@@ -21,7 +21,7 @@
 This file is part of the pyscmpd project.
 '''
 
-from pyscmpd.resource.core import *
+from pyscmpd.resource import *
 
 try:
 

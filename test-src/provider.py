@@ -24,7 +24,7 @@ This file is part of the pyscmpd project.
 import traceback
 import logging
 
-import pyscmpd.resource.scprovider as provider 
+import pyscmpd.scprovider as provider 
 
 try:
 

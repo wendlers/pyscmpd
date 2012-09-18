@@ -21,16 +21,17 @@
 This file is part of the pyscmpd project.
 '''
 
+import pickle
 import logging
 import soundcloud 
 
-import pyscmpd.resource.core as core
+import pyscmpd.resource as resource
 
-class Root(core.DirectoryResource):
+class Root(resource.DirectoryResource):
 
 	def __init__(self, resourceId, resourceLocation):
 
-		core.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
+		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
 
 		for uri in ResourceProvider.ROOT_USERS:
 
@@ -44,11 +45,11 @@ class Root(core.DirectoryResource):
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
 
-class User(core.DirectoryResource):
+class User(resource.DirectoryResource):
 
 	def __init__(self, resourceId, resourceLocation, name, artist):
 
-		core.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
+		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
 		# TODO: do not load in advance, but use lazy loading when first call to "getAllChildren" is made
 		try:
@@ -71,7 +72,7 @@ class User(core.DirectoryResource):
 		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
 
 
-class Track(core.FileResource):
+class Track(resource.FileResource):
 
 	def getStreamUri(self):
 		
@@ -87,11 +88,32 @@ class ResourceProvider:
 	sc 		= None 
 	root 	= None
 
-	def __init__(self):
+	def __init__(self, useCache = False, cacheFile = "scroot.cache"):
 
 		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
 
+		if useCache:
+
+			try:
+				f = open(cacheFile, 'rb')
+				self.root = pickle.load(f)		
+				f.close()
+				logging.info("Cache file [%s] read" % cacheFile)
+				return
+			except:
+				logging.warn("Unable to read cache file [%s], creating new" % cacheFile)	
+
+
 		self.root = Root(1, "http://www.soundcloud.com")
+
+		try:
+			f = open(cacheFile, 'wb')
+			pickle.dump(self.root, f)		
+			f.close()
+			logging.info("Cache file [%s] written" % cacheFile)
+		except:
+			logging.warn("Unable to write cache file [%s]" % cacheFile)	
+
 
 	def getRoot(self):
 

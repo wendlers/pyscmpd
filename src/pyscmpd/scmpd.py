@@ -1,19 +1,65 @@
+##
+# This file is part of the carambot-usherpa project.
+#
+# Copyright (C) 2012 Stefan Wendler <sw@kaltpost.de>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.
+##
+
+'''
+This file is part of the pyscmpd project.
+'''
+
 import logging
 import mpdserver
 import soundcloud
 
 import pyscmpd.scprovider as provider 
-import pyscmpd.gstplayer as coreplayer 
+import pyscmpd.gstplayer as gstplayer 
 
-mpd	   = None
-player = None
-scroot = None
+class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
+
+	scp 	= None
+	scroot  = None
+	player	= None
+ 
+	def __init__(self, rootUsers, player, serverPort = 9900):
+		
+		provider.ResourceProvider.ROOT_USERS = rootUsers
+ 
+		ScMpdServerDaemon.player 	= player
+		ScMpdServerDaemon.scp 		= provider.ResourceProvider(True)
+		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
+
+		mpdserver.MpdServerDaemon.__init__(self, serverPort)
+
+		self.requestHandler.RegisterCommand(mpdserver.Outputs)
+		self.requestHandler.RegisterCommand(Play)
+		self.requestHandler.RegisterCommand(PlayId)
+		self.requestHandler.RegisterCommand(Stop)
+		self.requestHandler.RegisterCommand(LsInfo)
+		self.requestHandler.RegisterCommand(Add)
+		self.requestHandler.RegisterCommand(AddId)
+		self.requestHandler.RegisterCommand(Clear)
+
+		self.requestHandler.Playlist = MpdPlaylist
 
 class Play(mpdserver.Play):
 
 	def handle_args(self, songPos=0):
 
-		player.play(songPos)
+		ScMpdServerDaemon.player.play(songPos)
 
 class PlayId(mpdserver.PlayId):
 
@@ -21,13 +67,13 @@ class PlayId(mpdserver.PlayId):
 
 		logging.debug("Playid %d" % songId)
 
-		player.playId(songId)
+		ScMpdServerDaemon.player.playId(songId)
 
 class Stop(mpdserver.Command):
 
 	def handle_args(self):
 
-		player.stop()
+		ScMpdServerDaemon.player.stop()
 
 class Clear(mpdserver.Command):
 
@@ -35,8 +81,8 @@ class Clear(mpdserver.Command):
 
 		logging.info("Clear playlist")
 
-		player.stop()
-		player.delAllChildren()
+		ScMpdServerDaemon.player.stop()
+		ScMpdServerDaemon.player.delAllChildren()
 
 class LsInfo(mpdserver.LsInfo):
 
@@ -58,9 +104,9 @@ class LsInfo(mpdserver.LsInfo):
 		path = ""
 
 		if self.directory == None:
-			r = scroot.getAllChildren()
+			r = ScMpdServerDaemon.scroot.getAllChildren()
 		else:
-			r = scroot.getChildByName(self.directory)
+			r = ScMpdServerDaemon.scroot.getChildByName(self.directory)
 			path = r.getName()
 
 			if r == None:
@@ -100,7 +146,7 @@ class Add(mpdserver.Add):
 			logging.error("Could not extract track from [%s]", song)
 			return	
 
-		u = scroot.getChildByName(user)
+		u = ScMpdServerDaemon.scroot.getChildByName(user)
 
 		if user == None:
 			logging.error("Could not find directory for [%s]", user)
@@ -112,7 +158,7 @@ class Add(mpdserver.Add):
 			logging.error("Track [%s] not found in directory [%s]" % (track, user))
 			return
 
-		player.addChild(t)
+		ScMpdServerDaemon.player.addChild(t)
 		
 		logging.info("Successfully added song: %s" % t.__str__())
 
@@ -130,7 +176,7 @@ class AddId(mpdserver.AddId):
 			logging.error("Could not extract track from [%s]", song)
 			return	
 
-		u = scroot.getChildByName(user)
+		u = ScMpdServerDaemon.scroot.getChildByName(user)
 
 		if user == None:
 			logging.error("Could not find directory for [%s]", user)
@@ -142,7 +188,7 @@ class AddId(mpdserver.AddId):
 			logging.error("Track [%s] not found in directory [%s]" % (track, user))
 			return
 
-		player.addChild(t)
+		ScMpdServerDaemon.player.addChild(t)
 		
 		logging.info("Successfully added song: %s" % t.__str__())
 
@@ -162,9 +208,11 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 
     def handlePlaylist(self):
 
+		# TODO: only recreate list if player indicates new playlist version
+
 		pl 	= []
 		i 	= 1
-		c 	= player.getAllChildren()
+		c 	= ScMpdServerDaemon.player.getAllChildren()
 		l 	= len(c)
 
 		for t in c: 
@@ -179,59 +227,12 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 
 			pl.append(s)
 
-		# logging.info("Returning playlist: %s" % pl)
 		return pl 
 
     def version(self):
-		return player.playlistVersion 
+		return ScMpdServerDaemon.player.playlistVersion 
 
     def move(self, fromPos, toPos):
 		pass
 
-if __name__ == "__main__":
-	try:
 
-		# logging.basicConfig(level=logging.DEBUG)
-		logging.basicConfig(level=logging.INFO)
-
-		player = coreplayer.GstPlayer() 
-
-		# TODO: do not hardcode root :-)
-		provider.ResourceProvider.ROOT_USERS =  [ 
-			"/users/griz", 
-			"/users/betamaxx", 
-			"/users/freudeamtanzen", 
-			"/users/barelylegit", 
-			"/users/maddecent" 				# TODO: this one has unicode / encoding errors
-			]
-
-	
-		# connect to soundcloud resources, use cache
-		scp	= provider.ResourceProvider(True)
-		scroot = scp.getRoot()
-
-		mpd=mpdserver.MpdServerDaemon(9999)
-		mpd.requestHandler.RegisterCommand(mpdserver.Outputs)
-		mpd.requestHandler.RegisterCommand(Play)
-		mpd.requestHandler.RegisterCommand(PlayId)
-		mpd.requestHandler.RegisterCommand(Stop)
-		mpd.requestHandler.RegisterCommand(LsInfo)
-		mpd.requestHandler.RegisterCommand(Add)
-		mpd.requestHandler.RegisterCommand(AddId)
-		mpd.requestHandler.RegisterCommand(Clear)
-		mpd.requestHandler.Playlist=MpdPlaylist
-
-		while mpd.wait(1) : pass
-
-	except KeyboardInterrupt:
-
-		logging.info("Stopping SoundCloud MPD server")
-
-	except Exception as e:
-
-		logging.error("Exception occurred: %s" % `e`)
-
-	finally:
-
-		if not mpd == None:
-			mpd.quit()
