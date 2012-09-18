@@ -130,7 +130,8 @@ class CommandItems(Command):
         items=self.items()
         acc=""
         for (i,v) in items:
-            acc+="%s: %s\n"%(i,str(v))
+            # acc+="%s: %s\n"%(i,str(v).encode('ASCII', 'ignore'))
+            acc+="%s: %s\n"%(i,unicode(v))
         return acc
 
 class CommandSongs(Command):

@@ -1,0 +1,7 @@
+#!/bin/bash
+
+LIB_DIR="./src"
+
+export PYTHONPATH=$LIB_DIR
+
+python $LIB_DIR/pyscmpd.py $@

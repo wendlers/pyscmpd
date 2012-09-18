@@ -34,11 +34,11 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 	scroot  = None
 	player	= None
  
-	def __init__(self, rootUsers, player, serverPort = 9900):
+	def __init__(self, rootUsers, serverPort = 9900):
 		
 		provider.ResourceProvider.ROOT_USERS = rootUsers
  
-		ScMpdServerDaemon.player 	= player
+		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
 		ScMpdServerDaemon.scp 		= provider.ResourceProvider(True)
 		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
 
@@ -48,10 +48,14 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(Play)
 		self.requestHandler.RegisterCommand(PlayId)
 		self.requestHandler.RegisterCommand(Stop)
+		self.requestHandler.RegisterCommand(Pause)
+		self.requestHandler.RegisterCommand(Next)
+		self.requestHandler.RegisterCommand(Previous)
 		self.requestHandler.RegisterCommand(LsInfo)
 		self.requestHandler.RegisterCommand(Add)
 		self.requestHandler.RegisterCommand(AddId)
 		self.requestHandler.RegisterCommand(Clear)
+		self.requestHandler.RegisterCommand(Status)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -74,6 +78,24 @@ class Stop(mpdserver.Command):
 	def handle_args(self):
 
 		ScMpdServerDaemon.player.stop()
+
+class Next(mpdserver.Command):
+
+	def handle_args(self):
+
+		ScMpdServerDaemon.player.next()
+
+class Previous(mpdserver.Command):
+
+	def handle_args(self):
+
+		ScMpdServerDaemon.player.previous()
+
+class Pause(mpdserver.Command):
+
+	def handle_args(self):
+
+		ScMpdServerDaemon.player.pause()
 
 class Clear(mpdserver.Command):
 
@@ -201,11 +223,6 @@ class AddId(mpdserver.AddId):
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
 
-    def songIdToPosition(self, songId):
-
-		logging.info("Request to convert Id [%d] to position" % songId)
-		return 0
-
     def handlePlaylist(self):
 
 		# TODO: only recreate list if player indicates new playlist version
@@ -235,4 +252,27 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
     def move(self, fromPos, toPos):
 		pass
 
+    def delete(self, position):
+		ScMpdServerDaemon.player.delete(position)
 
+    def deleteId(self, songId):
+		ScMpdServerDaemon.player.deleteId(songId)
+
+
+class Status(mpdserver.Status):
+
+	def items(self):
+  
+		# def helper_status_play(self,volume=0,repeat=0,random=0,xfade=0,elapsedTime=10,durationTime=100,playlistSongNumber=-1,playlistSongId=-1):
+
+		if ScMpdServerDaemon.player.playerStatus == "play":
+			return self.helper_status_play(
+				playlistSongNumber=ScMpdServerDaemon.player.currentSongNumber,
+				playlistSongId=ScMpdServerDaemon.player.currentSongId)
+
+		if ScMpdServerDaemon.player.playerStatus == "pause":
+			return self.helper_status_pause(
+				playlistSongNumber=ScMpdServerDaemon.player.currentSongNumber,
+				playlistSongId=ScMpdServerDaemon.player.currentSongId)
+
+		return self.helper_status_stop()

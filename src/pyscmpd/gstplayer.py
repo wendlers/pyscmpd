@@ -27,14 +27,23 @@ import pyscmpd.resource as resource
 
 class GstPlayer(resource.DirectoryResource):
 
-	player 			= None 
-	playlistVersion = 0
-	
+	player 				= None 
+	bus					= None
+	playlistVersion 	= 0
+	playerStatus		= "stop"	
+	currentSongNumber 	= -1
+	currentSongId 		= -1
+
 	def __init__(self):	
 
 		resource.DirectoryResource.__init__(self, 0, None, "Current Playlist")
 
 		self.player = gst.element_factory_make("playbin", "player")
+		
+		self.bus = self.player.get_bus()
+		self.bus.enable_sync_message_emission()
+		self.bus.add_signal_watch()
+		self.bus.connect('message::eos', self.onEos)
 
 	def addChild(self, child):
 
@@ -42,10 +51,18 @@ class GstPlayer(resource.DirectoryResource):
 			logging.error("Only file resources allowed for playlists. Got: %s" % child.__str__())
 			return
 
+		self.children.append(child)
 		self.playlistVersion = self.playlistVersion + 1
 
-		self.children.append(child)
+	def delChild(self, child):	
+	
+		resource.DirectoryResource.delChild(self, child)
+		self.playlistVersion = self.playlistVersion + 1
 
+	def delAllChildren(self):
+
+		resource.DirectoryResource.delAllChildren(self)
+		self.playlistVersion = self.playlistVersion + 1
 
 	def play(self, filePos=0):
 
@@ -61,7 +78,11 @@ class GstPlayer(resource.DirectoryResource):
 		self.player.set_state(gst.STATE_NULL)
 		self.player.set_property('uri', f.getStreamUri())
 		self.player.set_state(gst.STATE_PLAYING)
+		self.playerStatus = "play"
 
+		self.currentSongNumber = filePos
+		self.currentSongId = f.getId()
+ 
 	def playId(self, fileId):
 
 		p = 0
@@ -69,13 +90,69 @@ class GstPlayer(resource.DirectoryResource):
 		for c in self.children:
 			if c.getId() == fileId:
 				self.play(p)
+				self.currentSongNumber = p 
+				self.currentSongId = fileId 
 				return
 
 			p = p + 1
 
-		logging.info("No file with id [%d] in playlist" % fileId)
-		
+		logging.error("No file with id [%d] in playlist" % fileId)
+
+	def delete(self, filePos):
+
+		if filePos > len(self.children): 
+			logging.error("Invalid filePos (%d) given. Only %d files in current playlist." % 
+				(filePos, len(self.children)))
+			return 
+
+		c = self.children[filePos]
+		self.delChild(c)
+
+	def deleteId(self, fileId):
+
+		for c in self.children:
+			if c.getId() == fileId:
+				self.delChild(c)
+				return
+
+		logging.error("No file with id [%d] in playlist" % fileId)
+
+	def pause(self):
+
+		if self.playerStatus == "pause":
+			self.player.set_state(gst.STATE_PLAYING)
+			logging.info("Player resumed")
+			self.playerStatus = "play"
+		else:
+			self.player.set_state(gst.STATE_PAUSED)
+			logging.info("Player paused")
+			self.playerStatus = "pause"
+
 	def stop(self):
 
 		self.player.set_state(gst.STATE_NULL)
 		logging.info("Player stopped")
+		self.playerStatus = "stop"
+
+	def next(self):
+
+		if self.playerStatus == "pause" or self.playerStatus == "play" :
+
+			if self.currentSongNumber + 1 < len(self.children):
+				self.play(self.currentSongNumber + 1)
+			else:
+				self.play()	
+
+	def previous(self):
+
+		if self.playerStatus == "pause" or self.playerStatus == "play" :
+
+			if self.currentSongNumber - 1 >= 0:
+				self.play(self.currentSongNumber - 1)
+			else:
+				self.play(len(self.children) - 1)
+
+	def onEos(self, bus, msg):
+		logging.info("EOS, playing next stream in playlist")
+		self.next()	
+

@@ -197,8 +197,8 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                 else:
                     msg=msg+"OK\n"
                 logger.debug("Message sent:\n\t\t"+msg.replace("\n","\n\t\t"))
-                umsg=unicode(msg,"utf-8",errors='replace')
-                self.request.send(umsg.encode("utf-8"))
+                # umsg=unicode(msg,"utf-8",errors='replace')
+                self.request.send(msg.encode("utf-8"))
             except IOError,e:
                 logger.debug("Client disconnected (%s)"% threading.currentThread().getName())
                 break
@@ -312,7 +312,7 @@ class MpdServerDaemon(MpdServer):
         
     def quit(self):
         """Stop MPD server deamon."""
-        logger.info("Quiiting Mpd Server")
+        logger.info("Stopping Mpd Server")
         self.shutdown()
 
     def wait(self,timeout=None):

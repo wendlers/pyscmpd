@@ -22,29 +22,35 @@ This file is part of the pyscmpd project.
 '''
 
 import logging
-
+import gobject
 import pyscmpd.scmpd as scmpd
-import pyscmpd.gstplayer as gstplayer 
+
+gobject.threads_init()
 
 mpd = None
+mainloop = None
 
 try:
 
 	# logging.basicConfig(level=logging.DEBUG)
 	logging.basicConfig(level=logging.INFO)
 
-	player = gstplayer.GstPlayer() 
-
 	# TODO: do not hardcode root :-)
 	ROOT_USERS =  [ 
 		"/users/griz", 
-		"/users/betamaxx",				# TODO: this one has unicode / encoding errors 
+		"/users/betamaxx",
 		"/users/freudeamtanzen", 
 		"/users/barelylegit", 
-		"/users/maddecent" 				# TODO: this one has unicode / encoding errors
+		"/users/maddecent" 
 		]
 
-	mpd = scmpd.ScMpdServerDaemon(ROOT_USERS, player)
+	mpd = scmpd.ScMpdServerDaemon(ROOT_USERS)
+
+	mainloop = gobject.MainLoop()
+	mainloop.run()
+
+#	while mpd.wait(1) : 
+#		pass
 
 except KeyboardInterrupt:
 
@@ -58,3 +64,6 @@ finally:
 
 	if not mpd == None:
 		mpd.quit()
+
+	if not mainloop == None:
+		mainloop.quit()
