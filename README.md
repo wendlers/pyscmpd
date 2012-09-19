@@ -45,6 +45,10 @@ are needed to make the "pyscmpd" runable from its project directory.
 
 _On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)_
 
+For the following steps, it is assumed, that `$HOME/src`is your working directory:
+
+	mkdir $HOME/src
+
 *1) Install soundcloud-python*
 
 apt-get python setuptools:
@@ -53,6 +57,7 @@ apt-get python setuptools:
 
 clone the sources:
 
+	cd $HOME/src
 	git clone https://github.com/soundcloud/soundcloud-python.git
 	
 run the setup script
@@ -76,6 +81,7 @@ apt-get the library:
 
 clone pyscmpd sources:
 
+	cd $HOME/src
 	git clone https://github.com/wendlers/pyscmpd.git
 	
 install python-mpd-server:
