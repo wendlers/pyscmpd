@@ -30,7 +30,7 @@ Prerequisites
 
 * [python soundcloud API installed] (https://github.com/soundcloud/soundcloud-python) 
 * [python-mpd-server API installed] (http://pympdserver.tuxfamily.org/) *included in ` extlib`*
-* python-gst installed (apt-get install python-gst0.10)
+* [python-gst installed] (http://pygstdocs.berlios.de/)
 
 
 Install
