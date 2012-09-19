@@ -74,6 +74,12 @@ install python-mpd-server:
 	cd pyscmpd/extlib/python-mpd-server
 	sudo python setup.py install
 
+4) Get a decent MPD client
+
+I prefere ncmpcpp:
+
+	sudo apt-get install ncmpcpp
+	
 ** On Other Linux Systems
 
 To be done ...
