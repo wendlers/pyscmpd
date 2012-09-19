@@ -57,6 +57,7 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(Clear)
 		self.requestHandler.RegisterCommand(Status)
 		self.requestHandler.RegisterCommand(CurrentSong)
+		self.requestHandler.RegisterCommand(SetVol)
 		self.requestHandler.RegisterCommand(mpdserver.Move)
 		self.requestHandler.RegisterCommand(mpdserver.MoveId)
 
@@ -75,6 +76,12 @@ class PlayId(mpdserver.PlayId):
 		logging.debug("Playid %d" % songId)
 
 		ScMpdServerDaemon.player.playId(songId)
+
+class SetVol(mpdserver.SetVol):
+
+	def handle_args(self, volume):
+
+		ScMpdServerDaemon.player.setVolume(volume)
 
 class Stop(mpdserver.Command):
 
@@ -292,6 +299,7 @@ class Status(mpdserver.Status):
   
 		if ScMpdServerDaemon.player.playerStatus == "play":
 			return self.helper_status_play(
+				volume = ScMpdServerDaemon.player.getVolume(),
 				elapsedTime = ScMpdServerDaemon.player.elapsedTime(),
 				durationTime = ScMpdServerDaemon.player.duration(),
 				playlistSongNumber = ScMpdServerDaemon.player.currentSongNumber,
@@ -299,7 +307,10 @@ class Status(mpdserver.Status):
 
 		if ScMpdServerDaemon.player.playerStatus == "pause":
 			return self.helper_status_pause(
-				playlistSongNumber=ScMpdServerDaemon.player.currentSongNumber,
-				playlistSongId=ScMpdServerDaemon.player.currentSongId)
+				volume = ScMpdServerDaemon.player.getVolume(),
+				elapsedTime = ScMpdServerDaemon.player.elapsedTime(),
+				durationTime = ScMpdServerDaemon.player.duration(),
+				playlistSongNumber = ScMpdServerDaemon.player.currentSongNumber,
+				playlistSongId = ScMpdServerDaemon.player.currentSongId)
 
 		return self.helper_status_stop()

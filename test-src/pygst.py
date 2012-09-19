@@ -21,6 +21,10 @@ player.set_property('uri', music_stream_uri)
 
 #start playing
 player.set_state(gst.STATE_PLAYING)
+print "Volume: ", player.get_property('volume')
+player.set_property('volume', 0.5)
+
+print "New Volume: ", player.get_property('volume')
 
 #listen for tags on the message bus; tag event might be called more than once
 bus = player.get_bus()

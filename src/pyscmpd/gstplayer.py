@@ -228,3 +228,12 @@ class GstPlayer(resource.DirectoryResource):
 			pass
 
 		return p
+
+	def setVolume(self, percent):
+		p = percent / 100.0 + 0.005
+		logging.info("Setting volume to %f" % p)
+		self.player.set_property('volume', p)
+
+	def getVolume(self):
+		return int(self.player.get_property('volume') * 100)
+		
