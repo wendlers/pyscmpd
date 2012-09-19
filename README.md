@@ -19,10 +19,10 @@ NOTE: only basic MPD server daemon available yet
 Project Directory Layout
 ------------------------
 
- `test-src`		Some test/example sources
- `src`			Main sources four pyscmpd
- `doc`			Documentation
- `extlib`		External libraries (like python-mpd-server)
+ * `test-src`		Some test/example sources
+ * `src`		Main sources four pyscmpd
+ * `doc`		Documentation
+ * `extlib`		External libraries (like python-mpd-server)
 
 
 Prerequisites
