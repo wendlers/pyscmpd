@@ -28,9 +28,9 @@ Project Directory Layout
 Prerequisites
 -------------
 
-* Python (2.6 or 2.7, not tested with 3)
-* python-setuptools for installing soundcloud-python
-* git for cloning the sources
+* [Python] (http://python.org/) (2.6 or 2.7, not tested with 3)
+* [python-setuptools] (http://pypi.python.org/pypi/setuptools) for installing soundcloud-python
+* [git] (http://git-scm.com/) for cloning the sources
 * [python soundcloud API installed] (https://github.com/soundcloud/soundcloud-python) 
 * [python-mpd-server API installed] (http://pympdserver.tuxfamily.org/) *included in ` extlib`*
 * [python-gst installed] (http://pygstdocs.berlios.de/)
