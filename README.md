@@ -20,6 +20,9 @@ Project Directory Layout
 ------------------------
 
  `test-src`		Some test/example sources
+ `src`			Main sources four pyscmpd
+ `doc`			Documentation
+ `extlib`		External libraries (like python-mpd-server)
 
 
 Prerequisites
@@ -38,7 +41,7 @@ are needed to make the "pyscmpd" runable from its project directory.
 
 ** On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)
 
-1) Install soundcloud-python
+*1) Install soundcloud-python*
 
 apt-get python setuptools:
 
@@ -55,15 +58,17 @@ run the setup script
 	
 Note: internet connection is needed for this step, since the installer will go and fetch some dependencies from the net. 	
 
-2) Install python-gst
+*2) Install python-gst*
 
 apt-get the library:
 
 	sudo apt-get install python-gst0.10
 	
-3) Install python-mpd-server
+*3) Install python-mpd-server*
 
-*DONT'T use the version from the python-mpd-server homepage!* "pyscmpd" needs a modified version included with "pyscmpd" sources. 
+*DONT'T use the version from the python-mpd-server homepage!* 
+
+"pyscmpd" needs a modified version included with "pyscmpd" sources. 
 
 clone pyscmpd sources:
 
@@ -74,11 +79,15 @@ install python-mpd-server:
 	cd pyscmpd/extlib/python-mpd-server
 	sudo python setup.py install
 
-4) Get a decent MPD client
+*4) Get a decent MPD client*
 
 I prefere ncmpcpp:
 
 	sudo apt-get install ncmpcpp
+	
+Or for a GUI based client sonata:
+
+	sudo apt-get install sonata
 	
 ** On Other Linux Systems
 
