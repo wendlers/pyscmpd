@@ -173,7 +173,7 @@ class MpdPlaylistSong(object):
 
     def toMpdMsg(self):
         if self.playlistPosition == None :
-            logger.warning("MpdPlaylistSong.playlistposition attribute is not set.")
+            logger.warning("MpdPlaylistSong.playlistPosition attribute is not set.")
         return ('file: '+self.file+"\n"+
                 'Time: '+str(self.time)+"\n"+
                 'Album: '+self.album+"\n"+

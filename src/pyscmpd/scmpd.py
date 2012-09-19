@@ -119,6 +119,7 @@ class CurrentSong(mpdserver.CurrentSong):
 			return []
 
 		s = mpdserver.MpdPlaylistSong(
+			playlistPosition = ScMpdServerDaemon.player.currentSongNumber,
 			artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
 			title = t.getMeta("Title").encode('ASCII', 'ignore'), 
 			file = t.getMeta("file").encode('ASCII', 'ignore'),
@@ -249,19 +250,22 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 		# TODO: only recreate list if player indicates new playlist version
 
 		pl 	= []
-		i 	= 1
+		i 	= 0
 		c 	= ScMpdServerDaemon.player.getAllChildren()
 		l 	= len(c)
 
 		for t in c: 
 
 			s = mpdserver.MpdPlaylistSong(
+				playlistPosition = i,
 				artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
 				title = t.getMeta("Title").encode('ASCII', 'ignore'), 
 				file = t.getMeta("file").encode('ASCII', 'ignore'),
-				track = "%d/%d" % (i, l),
+				track = "%d/%d" % (i + 1, l),
 				time = "%d" % (t.getMeta("Time") / 1000),
 				songId = t.getId())
+
+			i = i + 1
 
 			pl.append(s)
 
@@ -286,8 +290,6 @@ class Status(mpdserver.Status):
 
 	def items(self):
   
-		# def helper_status_play(self,volume=0,repeat=0,random=0,xfade=0,elapsedTime=10,durationTime=100,playlistSongNumber=-1,playlistSongId=-1):
-
 		if ScMpdServerDaemon.player.playerStatus == "play":
 			return self.helper_status_play(
 				playlistSongNumber=ScMpdServerDaemon.player.currentSongNumber,

@@ -103,16 +103,10 @@ class GstPlayer(resource.DirectoryResource):
 
 	def currentSong(self):
 
-		# return self.children[0]
-
-		if self.currentSongId < 0:
+		if self.currentSongNumber < 0 or self.currentSongNumber >= len(self.children):
 			return None
 
-		for c in self.children:
-			if c.getId() == self.currentSongId:
-				return c
-
-		return None
+		return self.children[self.currentSongNumber] 
 
 	def delete(self, filePos):
 
