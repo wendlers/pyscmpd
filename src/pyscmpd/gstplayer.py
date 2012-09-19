@@ -212,3 +212,19 @@ class GstPlayer(resource.DirectoryResource):
 		logging.info("EOS, playing next stream in playlist")
 		self.next()	
 
+	def duration(self):
+
+		c = self.currentSong()
+
+		return int(c.getMeta("Time") / 1000)
+			
+	def elapsedTime(self):
+
+		p = 0
+		
+		try:
+			p = int(self.player.query_position(gst.FORMAT_TIME, None)[0] / 1000000000)
+		except:
+			pass
+
+		return p

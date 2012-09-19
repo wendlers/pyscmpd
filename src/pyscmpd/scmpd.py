@@ -292,8 +292,10 @@ class Status(mpdserver.Status):
   
 		if ScMpdServerDaemon.player.playerStatus == "play":
 			return self.helper_status_play(
-				playlistSongNumber=ScMpdServerDaemon.player.currentSongNumber,
-				playlistSongId=ScMpdServerDaemon.player.currentSongId)
+				elapsedTime = ScMpdServerDaemon.player.elapsedTime(),
+				durationTime = ScMpdServerDaemon.player.duration(),
+				playlistSongNumber = ScMpdServerDaemon.player.currentSongNumber,
+				playlistSongId = ScMpdServerDaemon.player.currentSongId)
 
 		if ScMpdServerDaemon.player.playerStatus == "pause":
 			return self.helper_status_pause(
