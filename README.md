@@ -85,11 +85,11 @@ install python-mpd-server:
 
 *4) Get a decent MPD client*
 
-I prefere ncmpcpp:
+I prefere [ncmpcpp] (http://ncmpcpp.rybczak.net/):
 
 	sudo apt-get install ncmpcpp
 	
-Or for a GUI based client sonata:
+Or for a GUI based client [sonata] (http://sonata.berlios.de/):
 
 	sudo apt-get install sonata
 	
