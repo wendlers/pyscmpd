@@ -56,6 +56,9 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(AddId)
 		self.requestHandler.RegisterCommand(Clear)
 		self.requestHandler.RegisterCommand(Status)
+		self.requestHandler.RegisterCommand(CurrentSong)
+		self.requestHandler.RegisterCommand(mpdserver.Move)
+		self.requestHandler.RegisterCommand(mpdserver.MoveId)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -105,6 +108,24 @@ class Clear(mpdserver.Command):
 
 		ScMpdServerDaemon.player.stop()
 		ScMpdServerDaemon.player.delAllChildren()
+
+class CurrentSong(mpdserver.CurrentSong):
+
+    def songs(self): 
+
+		t = ScMpdServerDaemon.player.currentSong()
+
+		if t == None:
+			return []
+
+		s = mpdserver.MpdPlaylistSong(
+			artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
+			title = t.getMeta("Title").encode('ASCII', 'ignore'), 
+			file = t.getMeta("file").encode('ASCII', 'ignore'),
+			time = "%d" % (t.getMeta("Time") / 1000),
+			songId = t.getId())
+
+		return [s]
 
 class LsInfo(mpdserver.LsInfo):
 
@@ -249,15 +270,17 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
     def version(self):
 		return ScMpdServerDaemon.player.playlistVersion 
 
-    def move(self, fromPos, toPos):
-		pass
+    def move(self,fromPosition,toPosition):
+		ScMpdServerDaemon.player.moveId(fromPosition, toPosition)
 
+    def moveId(self,fromId,toPosition):
+		ScMpdServerDaemon.player.moveId(fromId, toPosition)
+ 
     def delete(self, position):
 		ScMpdServerDaemon.player.delete(position)
 
     def deleteId(self, songId):
 		ScMpdServerDaemon.player.deleteId(songId)
-
 
 class Status(mpdserver.Status):
 

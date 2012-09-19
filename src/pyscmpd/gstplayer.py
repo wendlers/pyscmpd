@@ -64,6 +64,9 @@ class GstPlayer(resource.DirectoryResource):
 		resource.DirectoryResource.delAllChildren(self)
 		self.playlistVersion = self.playlistVersion + 1
 
+		self.currentSongNumber = -1 
+		self.currentSongId = -1 
+
 	def play(self, filePos=0):
 
 		if filePos > len(self.children): 
@@ -98,6 +101,19 @@ class GstPlayer(resource.DirectoryResource):
 
 		logging.error("No file with id [%d] in playlist" % fileId)
 
+	def currentSong(self):
+
+		# return self.children[0]
+
+		if self.currentSongId < 0:
+			return None
+
+		for c in self.children:
+			if c.getId() == self.currentSongId:
+				return c
+
+		return None
+
 	def delete(self, filePos):
 
 		if filePos > len(self.children): 
@@ -117,6 +133,49 @@ class GstPlayer(resource.DirectoryResource):
 
 		logging.error("No file with id [%d] in playlist" % fileId)
 
+	def move(self, filePosFrom, filePosTo):
+
+		logging.info("move posFrom %d, posTo %d" % (filePosFrom, filePosTo))
+
+		if filePosFrom > len(self.children): 
+			logging.error("Invalid filePosFrom (%d) given. Only %d files in current playlist." % 
+				(filePosFrom, len(self.children)))
+			return 
+
+		if filePosTo > len(self.children): 
+			logging.error("Invalid filePosTo (%d) given. Only %d files in current playlist." % 
+				(filePosTo, len(self.children)))
+			return 
+
+		c = self.children[filePosFrom]
+
+		logging.info("File on posFrom: %s" % c.__str__())
+
+		self.children.remove(c)
+		self.children.insert(filePosTo, c)
+		self.playlistVersion = self.playlistVersion + 1
+
+	def moveId(self, fileIdFrom, filePosTo):
+		
+		self.move(fileIdFrom, filePosTo)
+
+		'''
+		logging.info("moveId idFrom %d, posTo %d" % (fileIdFrom, filePosTo))
+
+		if filePosTo > len(self.children): 
+			logging.error("Invalid filePosTo (%d) given. Only %d files in current playlist." % 
+				(filePosTo, len(self.children)))
+			return 
+
+		for c in self.children:
+			if c.getId() == fileIdFrom:
+				self.children.insert(filePosTo, c)
+				self.delChild(c)
+				return
+
+		logging.error("No file with id [%d] in playlist" % fileIdFrom)
+		'''
+
 	def pause(self):
 
 		if self.playerStatus == "pause":
@@ -133,6 +192,9 @@ class GstPlayer(resource.DirectoryResource):
 		self.player.set_state(gst.STATE_NULL)
 		logging.info("Player stopped")
 		self.playerStatus = "stop"
+
+		self.currentSongNumber = -1 
+		self.currentSongId = -1 
 
 	def next(self):
 
