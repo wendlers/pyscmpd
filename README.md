@@ -43,7 +43,7 @@ Install
 A complete installation of the pyscmpd is not supported yet. This section briefly describes what steps 
 are needed to make the "pyscmpd" runable from its project directory. 
 
-** On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)
+_On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)_
 
 *1) Install soundcloud-python*
 
@@ -93,7 +93,7 @@ Or for a GUI based client sonata:
 
 	sudo apt-get install sonata
 	
-** On Other Linux Systems
+_On Other Linux Systems_
 
 To be done ...
 
