@@ -67,27 +67,21 @@ run the setup script
 	
 Note: internet connection is needed for this step, since the installer will go and fetch some dependencies from the net. 	
 
-*2) Install python-gst*
+*2) Install python-gst and dependencies*
 
 apt-get the library:
 
-	sudo apt-get install python-gst0.10
+	sudo apt-get install python-gst0.10 gstreamer0.10-plugins-base
 	
-*3) Install python-mpd-server*
-
-*DONT'T use the version from the python-mpd-server homepage!* 
-
-"pyscmpd" needs a modified version included with "pyscmpd" sources. 
+*3) Install pyscmpd*
 
 clone pyscmpd sources:
 
 	cd $HOME/src
-	git clone https://github.com/wendlers/pyscmpd.git
+	git clone https://github.com/wendlers/pyscmpd.git gstreamer0.10-alsa
 	
-install python-mpd-server:
-
-	cd pyscmpd/extlib/python-mpd-server
-	sudo python setup.py install
+Note: "pyscmpd" has no installer yet, and needs to be run from its project directory 
+(see "Usage" chapter for more infromation).
 
 *4) Get a decent MPD client*
 
