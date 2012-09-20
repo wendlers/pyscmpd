@@ -41,7 +41,9 @@ try:
 		"betamaxx",
 		"freudeamtanzen", 
 		"barelylegit", 
-		"maddecent" 
+		"maddecent", 
+		"therealmccheese",
+		"yellowmice",
 		]
 
 	mpd = scmpd.ScMpdServerDaemon(favorites)

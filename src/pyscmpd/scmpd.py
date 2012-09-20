@@ -157,13 +157,17 @@ class LsInfo(mpdserver.LsInfo):
 		if self.directory == None:
 			r = ScMpdServerDaemon.scroot.getAllChildren()
 		else:
-			r = ScMpdServerDaemon.scroot.getChildByName(self.directory)
-			logging.info("Found: %s" % r.__str__())
-			path = r.getName()
+
+			if self.directory.startswith("favorites/") or self.directory.startswith("random/"):
+				(d, s, f) = self.directory.partition("/")
+				r = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(f)
+			else:
+				r = ScMpdServerDaemon.scroot.getChildByName(self.directory)
 
 			if r == None:
 				return i	
 
+			path = r.getName()
 			r = r.getAllChildren()
 
 		for e in r:
@@ -171,19 +175,13 @@ class LsInfo(mpdserver.LsInfo):
 			logging.debug("LsInfo sending item: %s/%s" % (path, e.__str__()))
 
 			if e.getType() == 1:
-				t = "directory"
+				i.append(("directory", e.getMeta("directory")))
 			else:
-				t = "file"
+				i.append(("file", e.getMeta("file")))
+				i.append(("Artist", e.getMeta("Artist")))
+				i.append(("Title", e.getMeta("Title")))
+				i.append(("Time", int(e.getMeta("Time") % 1000)))
  
-			if path == "":
-				i.append((t, e.getMeta("directory")))
-			else: 
-				i.append((t, e.getMeta("file")))
-				if e.getType() == 2:
-					i.append(("Artist", e.getMeta("Artist")))
-					i.append(("Title", e.getMeta("Title")))
-					i.append(("Time", int(e.getMeta("Time") % 1000)))
-
 		return i 
 
 class Add(mpdserver.Add):
@@ -192,15 +190,17 @@ class Add(mpdserver.Add):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		(user, sep, track) = song.partition("/")
+		(d, s, f) = song.partition("/")
 
-		if track == "":
-			logging.error("Could not extract track from [%s]", song)
-			return	
+		if d == "favorites" or d == "random":
+			(user, s, track) = f.partition("/") 
+			u = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(user)
+		else:
+			user  = d
+			track = f	
+			u = ScMpdServerDaemon.scroot.getChildByName(user)
 
-		u = ScMpdServerDaemon.scroot.getChildByName(user)
-
-		if user == None:
+		if u == None:
 			logging.error("Could not find directory for [%s]", user)
 			return
 
@@ -222,15 +222,17 @@ class AddId(mpdserver.AddId):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		(user, sep, track) = song.partition("/")
+		(d, s, f) = song.partition("/")
 
-		if track == "":
-			logging.error("Could not extract track from [%s]", song)
-			return	
+		if d == "favorites" or d == "random":
+			(user, s, track) = f.partition("/") 
+			u = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(user)
+		else:
+			user  = d
+			track = f	
+			u = ScMpdServerDaemon.scroot.getChildByName(user)
 
-		u = ScMpdServerDaemon.scroot.getChildByName(user)
-
-		if user == None:
+		if u == None:
 			logging.error("Could not find directory for [%s]", user)
 			return
 
@@ -242,11 +244,11 @@ class AddId(mpdserver.AddId):
 
 		ScMpdServerDaemon.player.addChild(t)
 		
-		logging.info("Successfully added song: %s" % t.__str__())
-
+		self.uniqueId = t.getId()
+		
 	def items(self):
 
-		self.uniqueId = self.uniqueId + 1
+		# self.uniqueId = self.uniqueId + 1
 
 		return [("id", self.uniqueId)]
 

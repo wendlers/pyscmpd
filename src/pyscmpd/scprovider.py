@@ -37,37 +37,68 @@ class ResourceProvider:
 
 		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
 
-		self.root = Root(1, "http://www.soundcloud.com")
+		self.root = Root(1, "pyscmpd")
 
 	def getRoot(self):
 
 		return self.root
-
-class CatRoot(resource.DirectoryResource):
-
-	def __init__(self, resourceId, resourceLocation):
-
-		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
-
-		catAll = Category(2, "all", "all")
-		catAll.setMeta({"directory" : "all"})		
-
-		catFav = Category(3, "favorites", "favorites")
-		catFav.setMeta({"directory" : "favorites"})
-		catFav.addChild(UserRoot(4, "http://www.soundcloud.com/users"))
-
-		self.addChild(catAll)
-		self.addChild(catFav)
-
-class Category(resource.DirectoryResource):
-
-	pass
 
 class Root(resource.DirectoryResource):
 
 	def __init__(self, resourceId, resourceLocation):
 
 		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
+
+		uall = RandomUsers(2)
+		uall.setMeta({"directory" : "random"})		
+
+		ufav = Favorites(4)
+		ufav.setMeta({"directory" : "favorites"})
+
+		self.addChild(uall)
+		self.addChild(ufav)
+
+class RandomUsers(resource.DirectoryResource):
+
+	def __init__(self, resourceId):
+
+		resource.DirectoryResource.__init__(self, resourceId, "random", "random")
+
+		self.children = None 
+
+	def getAllChildren(self):
+
+		if self.children == None:
+			self.retriveChildren()
+
+		return self.children
+		
+	def retriveChildren(self):
+
+		self.children = []
+
+		allUsers = ResourceProvider.sc.get("/users")
+
+		for user in allUsers:
+
+			try:
+
+				u = User(user.id, user.uri, user.permalink, user.username, self.name)				
+				u.setMeta({"directory" : self.name + "/" + user.permalink})		
+
+				self.addChild(u)
+
+				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
+					(user.uri, user.id, user.permalink))
+
+			except Exception as e:
+				logging.warn("Unable to retrive data for URI %s" % uri)
+
+class Favorites(resource.DirectoryResource):
+
+	def __init__(self, resourceId):
+
+		resource.DirectoryResource.__init__(self, resourceId, "favorites", "favorites")
 
 		self.children = None 
 
@@ -85,22 +116,28 @@ class Root(resource.DirectoryResource):
 		for uri in ResourceProvider.favorites:
 
 			try:
+
 				user = ResourceProvider.sc.get("/users/" + uri)
-				u = User(user.id, user.uri, user.permalink, user.username)				
-				u.setMeta({"directory" : user.permalink})		
+				u = User(user.id, user.uri, user.permalink, user.username, self.name)				
+				u.setMeta({"directory" : self.name + "/" + user.permalink})		
+
 				self.addChild(u)
+
 				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
 					(uri, user.id, user.permalink))
+
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
 class User(resource.DirectoryResource):
 
-	artist = None
+	artist 		= None
+	category 	= None
 
-	def __init__(self, resourceId, resourceLocation, name, artist):
+	def __init__(self, resourceId, resourceLocation, name, artist, category):
 
-		self.artist = artist
+		self.artist 	= artist
+		self.category 	= category
 
 		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
@@ -124,10 +161,11 @@ class User(resource.DirectoryResource):
 			for track in tracks:
 				tr = Track(track.id, track.stream_url, track.permalink)
 				tr.setMeta({
-					"file" : self.name + "/" + track.permalink,
+					"file" : self.category + "/" + self.name + "/" + track.permalink,
 					"Artist" : self.artist, 
 					"Title" : track.title, 
 					"Time" : track.duration})
+
 				self.addChild(tr)
 
 				logging.debug("Added tracki to use [%s]: %s" % (self.getName(), tr.__str__()))
