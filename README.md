@@ -71,14 +71,18 @@ Note: internet connection is needed for this step, since the installer will go a
 
 apt-get the library:
 
-	sudo apt-get install python-gst0.10 gstreamer0.10-plugins-base
+	sudo apt-get install python-gst0.10 
+
+on a fresh Respian, I needed additionally the following:
+
+	sudo apt-get install gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly gstreamer0.10-alsa 
 	
 *3) Install pyscmpd*
 
 clone pyscmpd sources:
 
 	cd $HOME/src
-	git clone https://github.com/wendlers/pyscmpd.git gstreamer0.10-alsa
+	git clone https://github.com/wendlers/pyscmpd.git 
 	
 Note: "pyscmpd" has no installer yet, and needs to be run from its project directory 
 (see "Usage" chapter for more infromation).
@@ -109,8 +113,4 @@ Then connect to the daemon on port "9900", e. g. with ncmcpp:
 
 	ncmpcpp -p 9900
 
-To change the list of users to browse, edit "ROOT_USERS" in "./src/pympd.py". 
-Whenever ROOT_USERS is changed, delte the meta data cache:
-
-	rm scroot.cache
-
+To change the list of your favorite users to browse, edit "favorites" in "./src/pympd.py". 

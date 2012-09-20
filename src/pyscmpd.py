@@ -35,7 +35,7 @@ try:
 	# logging.basicConfig(level=logging.DEBUG)
 	logging.basicConfig(level=logging.INFO)
 
-	# TODO: do not hardcode root :-)
+	# TODO: do not hardcode favorites :-)
 	favorites =  [ 
 		"griz", 
 		"betamaxx",
