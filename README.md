@@ -78,7 +78,7 @@ apt-get the library:
 clone pyscmpd sources:
 
 	cd $HOME/src
-	git clone https://github.com/wendlers/pyscmpd.git
+	git clone https://github.com/wendlers/pyscmpd.git gstreamer0.10-alsa
 	
 Note: "pyscmpd" has no installer yet, and needs to be run from its project directory 
 (see "Usage" chapter for more infromation).
