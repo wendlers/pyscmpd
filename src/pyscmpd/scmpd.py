@@ -34,12 +34,12 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 	scroot  = None
 	player	= None
  
-	def __init__(self, rootUsers, serverPort = 9900):
+	def __init__(self, favorites, serverPort = 9900):
 		
-		provider.ResourceProvider.ROOT_USERS = rootUsers
+		provider.ResourceProvider.favorites = favorites 
  
 		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
-		ScMpdServerDaemon.scp 		= provider.ResourceProvider(True)
+		ScMpdServerDaemon.scp 		= provider.ResourceProvider()
 		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
 
 		mpdserver.MpdServerDaemon.__init__(self, serverPort)
@@ -158,6 +158,7 @@ class LsInfo(mpdserver.LsInfo):
 			r = ScMpdServerDaemon.scroot.getAllChildren()
 		else:
 			r = ScMpdServerDaemon.scroot.getChildByName(self.directory)
+			logging.info("Found: %s" % r.__str__())
 			path = r.getName()
 
 			if r == None:

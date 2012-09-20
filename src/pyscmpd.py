@@ -36,15 +36,15 @@ try:
 	logging.basicConfig(level=logging.INFO)
 
 	# TODO: do not hardcode root :-)
-	ROOT_USERS =  [ 
-		"/users/griz", 
-		"/users/betamaxx",
-		"/users/freudeamtanzen", 
-		"/users/barelylegit", 
-		"/users/maddecent" 
+	favorites =  [ 
+		"griz", 
+		"betamaxx",
+		"freudeamtanzen", 
+		"barelylegit", 
+		"maddecent" 
 		]
 
-	mpd = scmpd.ScMpdServerDaemon(ROOT_USERS)
+	mpd = scmpd.ScMpdServerDaemon(favorites)
 
 	mainloop = gobject.MainLoop()
 	mainloop.run()

@@ -100,7 +100,9 @@ class DirectoryResource(Resource):
 
 	def getChildByName(self, name):
 
-		for c in self.children:
+		children = self.getAllChildren()
+
+		for c in children:
 			if c.getName() == name: 
 				return c
 
@@ -124,8 +126,8 @@ class DirectoryResource(Resource):
 		
 	def __str__(self):
 
-		return ("%s [id=%s; location=%s; type=%d, meta=%s, #children=%d]" % 
-			(self.name, self.id, self.location, self.getType(), self.meta, len(self.children)))
+		return ("%s [id=%s; location=%s; type=%d, meta=%s]" % 
+			(self.name, self.id, self.location, self.getType(), self.meta))
 
 
 class FileResource(Resource):

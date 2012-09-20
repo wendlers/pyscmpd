@@ -27,50 +27,115 @@ import soundcloud
 
 import pyscmpd.resource as resource
 
+class ResourceProvider:
+
+	favorites 	= None 
+	sc 			= None 
+	root 		= None
+
+	def __init__(self):
+
+		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
+
+		self.root = Root(1, "http://www.soundcloud.com")
+
+	def getRoot(self):
+
+		return self.root
+
+class CatRoot(resource.DirectoryResource):
+
+	def __init__(self, resourceId, resourceLocation):
+
+		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
+
+		catAll = Category(2, "all", "all")
+		catAll.setMeta({"directory" : "all"})		
+
+		catFav = Category(3, "favorites", "favorites")
+		catFav.setMeta({"directory" : "favorites"})
+		catFav.addChild(UserRoot(4, "http://www.soundcloud.com/users"))
+
+		self.addChild(catAll)
+		self.addChild(catFav)
+
+class Category(resource.DirectoryResource):
+
+	pass
+
 class Root(resource.DirectoryResource):
 
 	def __init__(self, resourceId, resourceLocation):
 
 		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
 
-		for uri in ResourceProvider.ROOT_USERS:
+		self.children = None 
+
+	def getAllChildren(self):
+
+		if self.children == None:
+			self.retriveChildren()
+
+		return self.children
+		
+	def retriveChildren(self):
+
+		self.children = []
+
+		for uri in ResourceProvider.favorites:
 
 			try:
-				user = ResourceProvider.sc.get(uri)
+				user = ResourceProvider.sc.get("/users/" + uri)
 				u = User(user.id, user.uri, user.permalink, user.username)				
 				u.setMeta({"directory" : user.permalink})		
 				self.addChild(u)
-				logging.debug("successfully retrieved data for URI %s: id=%d; name=%s" % (uri, user.id, user.permalink))
+				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
+					(uri, user.id, user.permalink))
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
-
 class User(resource.DirectoryResource):
+
+	artist = None
 
 	def __init__(self, resourceId, resourceLocation, name, artist):
 
+		self.artist = artist
+
 		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
-		# TODO: do not load in advance, but use lazy loading when first call to "getAllChildren" is made
+		self.children = None 
+
+	def getAllChildren(self):
+
+		if self.children == None:
+			self.retriveChildren()
+
+		return self.children
+	
+	def retriveChildren(self):
+
+		self.children = []
+
 		try:
-			logging.debug("Trying to get tracks for user [%s]" % name)
+			logging.debug("Trying to get tracks for user [%s] with uri [%s]" % (self.name, self.location))
 			tracks = ResourceProvider.sc.get(self.location + "/tracks")
 
 			for track in tracks:
 				tr = Track(track.id, track.stream_url, track.permalink)
 				tr.setMeta({
-					"file" : name + "/" + track.permalink,
-					"Artist" : artist, 
+					"file" : self.name + "/" + track.permalink,
+					"Artist" : self.artist, 
 					"Title" : track.title, 
 					"Time" : track.duration})
 				self.addChild(tr)
-				logging.debug("Added tracki to user [%s]: %s" % (self.getName(), tr.__str__()))
+
+				logging.debug("Added tracki to use [%s]: %s" % (self.getName(), tr.__str__()))
 
 		except Exception as e:
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
 		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
-
 
 class Track(resource.FileResource):
 
@@ -80,41 +145,3 @@ class Track(resource.FileResource):
 		logging.debug("Stream url for URI %s is %s" % (self.location, stream_url.location))
 		return stream_url.location
 
-
-class ResourceProvider:
-
-	ROOT_USERS = None 
-
-	sc 		= None 
-	root 	= None
-
-	def __init__(self, useCache = False, cacheFile = "scroot.cache"):
-
-		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
-
-		if useCache:
-
-			try:
-				f = open(cacheFile, 'rb')
-				self.root = pickle.load(f)		
-				f.close()
-				logging.info("Cache file [%s] read" % cacheFile)
-				return
-			except:
-				logging.warn("Unable to read cache file [%s], creating new" % cacheFile)	
-
-
-		self.root = Root(1, "http://www.soundcloud.com")
-
-		try:
-			f = open(cacheFile, 'wb')
-			pickle.dump(self.root, f)		
-			f.close()
-			logging.info("Cache file [%s] written" % cacheFile)
-		except:
-			logging.warn("Unable to write cache file [%s]" % cacheFile)	
-
-
-	def getRoot(self):
-
-		return self.root
