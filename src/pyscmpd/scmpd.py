@@ -211,9 +211,6 @@ class AddId(mpdserver.AddId):
 		logging.info("Successfully added song: %s" % t.__str__())
 
 	def items(self):
-
-		# self.uniqueId = self.uniqueId + 1
-
 		return [("id", self.uniqueId)]
 
 

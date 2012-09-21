@@ -34,7 +34,7 @@ class Seek(Command):
 class Outputs(CommandItems):
     def items(self):
         return [('outputid',0),        # <int output> the output number                              
-                ('outputname','test'), # <str name> the name as defined in the MPD configuration file
+                ('outputname','gstreamer'), # <str name> the name as defined in the MPD configuration file
                 ('outputenabled',1)    # <int enabled> 1 if enabled, 0 if disabled                   
                 ]
 
@@ -204,3 +204,9 @@ class Save(Command):
 
 class Rm(Command):
     formatArg=[('playlistName',str)]
+
+class Decoders(CommandItems):
+	def items(self):
+		return [('plugin','gstreamer'),                                      
+				('suffix','mp3'), 
+				]

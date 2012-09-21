@@ -49,24 +49,21 @@ class Root(resource.DirectoryResource):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
-		uall = RandomUsers(2)
+		uall = RandomUsers()
 		uall.setMeta({"directory" : "random"})		
 
-		i = 1
-
 		for fav in favorites:
-			ufav = Favorites(i, fav["name"], fav["users"])
+			ufav = Favorites(fav["name"], fav["users"])
 			self.addChild(ufav)
-			i = i + 1 
 
 		self.addChild(uall)
 
 
 class RandomUsers(resource.DirectoryResource):
 
-	def __init__(self, resourceId):
+	def __init__(self):
 
-		resource.DirectoryResource.__init__(self, resourceId, "random", "random")
+		resource.DirectoryResource.__init__(self, 0, "random", "random")
 
 		self.children = None 
 
@@ -102,12 +99,12 @@ class Favorites(resource.DirectoryResource):
 
 	users = None
 
-	def __init__(self, resourceId, name, users):
+	def __init__(self, name, users):
 
 		logging.info("Adding new favorites folder [%s] with users [%s]" %
 			(name, users))
 
-		resource.DirectoryResource.__init__(self, resourceId, name, name)
+		resource.DirectoryResource.__init__(self, 0, name, name)
 
 		self.setMeta({"directory" : name})
 
@@ -125,7 +122,6 @@ class Favorites(resource.DirectoryResource):
 
 		self.children = []
 
-		# for uri in ResourceProvider.favorites:
 		for uri in self.users:
 
 			try:
@@ -140,6 +136,7 @@ class Favorites(resource.DirectoryResource):
 					(uri, user.id, user.permalink))
 
 			except Exception as e:
+
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
 class User(resource.DirectoryResource):
@@ -168,6 +165,7 @@ class User(resource.DirectoryResource):
 		self.children = []
 
 		try:
+
 			logging.debug("Trying to get tracks for user [%s] with uri [%s]" % (self.name, self.location))
 			tracks = ResourceProvider.sc.get(self.location + "/tracks")
 
@@ -184,6 +182,7 @@ class User(resource.DirectoryResource):
 				logging.debug("Added tracki to use [%s]: %s" % (self.getName(), tr.__str__()))
 
 		except Exception as e:
+
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
 		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
