@@ -36,10 +36,8 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
  
 	def __init__(self, favorites, serverPort = 9900):
 		
-		provider.ResourceProvider.favorites = favorites 
- 
 		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
-		ScMpdServerDaemon.scp 		= provider.ResourceProvider()
+		ScMpdServerDaemon.scp 		= provider.ResourceProvider(favorites)
 		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
 
 		mpdserver.MpdServerDaemon.__init__(self, serverPort)
@@ -140,7 +138,7 @@ class LsInfo(mpdserver.LsInfo):
 	currdir = None
 	directory = None
 
-	def handle_args(self, directory="/"):
+	def handle_args(self, directory=None):
 
 		logging.info("List directory [%s]" % directory)
 
@@ -152,27 +150,19 @@ class LsInfo(mpdserver.LsInfo):
 	def items(self):
 
 		i = []
-		path = ""
 
 		if self.directory == None:
-			r = ScMpdServerDaemon.scroot.getAllChildren()
+			r = ScMpdServerDaemon.scroot
 		else:
+			r = ScMpdServerDaemon.scroot.getChildByPath(self.directory)
 
-			if self.directory.startswith("favorites/") or self.directory.startswith("random/"):
-				(d, s, f) = self.directory.partition("/")
-				r = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(f)
-			else:
-				r = ScMpdServerDaemon.scroot.getChildByName(self.directory)
+		if not r.getType() == 1:
+			logging.warn("[%s] is not a directory" % r.getName())
+			return i
 
-			if r == None:
-				return i	
+		for e in r.getAllChildren():
 
-			path = r.getName()
-			r = r.getAllChildren()
-
-		for e in r:
-
-			logging.debug("LsInfo sending item: %s/%s" % (path, e.__str__()))
+			logging.debug("LsInfo sending item: %s/%s" % (self.directory, e.__str__()))
 
 			if e.getType() == 1:
 				i.append(("directory", e.getMeta("directory")))
@@ -190,21 +180,7 @@ class Add(mpdserver.Add):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		(d, s, f) = song.partition("/")
-
-		if d == "favorites" or d == "random":
-			(user, s, track) = f.partition("/") 
-			u = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(user)
-		else:
-			user  = d
-			track = f	
-			u = ScMpdServerDaemon.scroot.getChildByName(user)
-
-		if u == None:
-			logging.error("Could not find directory for [%s]", user)
-			return
-
-		t = u.getChildByName(track)
+		t = ScMpdServerDaemon.scroot.getChildByPath(song)
 
 		if t == None:
 			logging.error("Track [%s] not found in directory [%s]" % (track, user))
@@ -222,21 +198,7 @@ class AddId(mpdserver.AddId):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		(d, s, f) = song.partition("/")
-
-		if d == "favorites" or d == "random":
-			(user, s, track) = f.partition("/") 
-			u = ScMpdServerDaemon.scroot.getChildByName(d).getChildByName(user)
-		else:
-			user  = d
-			track = f	
-			u = ScMpdServerDaemon.scroot.getChildByName(user)
-
-		if u == None:
-			logging.error("Could not find directory for [%s]", user)
-			return
-
-		t = u.getChildByName(track)
+		t = ScMpdServerDaemon.scroot.getChildByPath(song)
 
 		if t == None:
 			logging.error("Track [%s] not found in directory [%s]" % (track, user))
@@ -245,7 +207,9 @@ class AddId(mpdserver.AddId):
 		ScMpdServerDaemon.player.addChild(t)
 		
 		self.uniqueId = t.getId()
-		
+
+		logging.info("Successfully added song: %s" % t.__str__())
+
 	def items(self):
 
 		# self.uniqueId = self.uniqueId + 1
@@ -301,6 +265,7 @@ class Status(mpdserver.Status):
 	def items(self):
   
 		if ScMpdServerDaemon.player.playerStatus == "play":
+
 			return self.helper_status_play(
 				volume = ScMpdServerDaemon.player.getVolume(),
 				elapsedTime = ScMpdServerDaemon.player.elapsedTime(),
@@ -309,6 +274,7 @@ class Status(mpdserver.Status):
 				playlistSongId = ScMpdServerDaemon.player.currentSongId)
 
 		if ScMpdServerDaemon.player.playerStatus == "pause":
+
 			return self.helper_status_pause(
 				volume = ScMpdServerDaemon.player.getVolume(),
 				elapsedTime = ScMpdServerDaemon.player.elapsedTime(),

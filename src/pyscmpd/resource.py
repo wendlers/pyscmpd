@@ -21,6 +21,8 @@
 This file is part of the pyscmpd project.
 '''
 
+import logging
+
 class Resource:
 
 	TYPE_GENERIC	= 0
@@ -108,6 +110,28 @@ class DirectoryResource(Resource):
 
 		return None
 		
+	def getChildByPath(self, path):
+
+		p = path
+		c = self
+
+		while True:
+			(l, s, r) = p.partition("/")
+
+			logging.info("Consuming path [%s]/[%s]" % (l, r))
+
+			if l == "" or not c.getType() == Resource.TYPE_DIRECTORY:
+				return None
+
+			c = c.getChildByName(l)
+		
+			if r == "":
+				break
+			
+			p = r	
+
+		return c 
+
 	def getAllChildren(self):
 
 		return self.children

@@ -29,15 +29,15 @@ import pyscmpd.resource as resource
 
 class ResourceProvider:
 
-	favorites 	= None 
+	# favorites 	= None 
 	sc 			= None 
 	root 		= None
 
-	def __init__(self):
+	def __init__(self, favorites):
 
 		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
 
-		self.root = Root(1, "pyscmpd")
+		self.root = Root(favorites)
 
 	def getRoot(self):
 
@@ -45,18 +45,22 @@ class ResourceProvider:
 
 class Root(resource.DirectoryResource):
 
-	def __init__(self, resourceId, resourceLocation):
+	def __init__(self, favorites):
 
-		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, "Soundcloud Users")
+		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
 		uall = RandomUsers(2)
 		uall.setMeta({"directory" : "random"})		
 
-		ufav = Favorites(4)
-		ufav.setMeta({"directory" : "favorites"})
+		i = 1
+
+		for fav in favorites:
+			ufav = Favorites(i, fav["name"], fav["users"])
+			self.addChild(ufav)
+			i = i + 1 
 
 		self.addChild(uall)
-		self.addChild(ufav)
+
 
 class RandomUsers(resource.DirectoryResource):
 
@@ -96,11 +100,19 @@ class RandomUsers(resource.DirectoryResource):
 
 class Favorites(resource.DirectoryResource):
 
-	def __init__(self, resourceId):
+	users = None
 
-		resource.DirectoryResource.__init__(self, resourceId, "favorites", "favorites")
+	def __init__(self, resourceId, name, users):
 
-		self.children = None 
+		logging.info("Adding new favorites folder [%s] with users [%s]" %
+			(name, users))
+
+		resource.DirectoryResource.__init__(self, resourceId, name, name)
+
+		self.setMeta({"directory" : name})
+
+		self.children 	= None 
+		self.users 		= users
 
 	def getAllChildren(self):
 
@@ -113,7 +125,8 @@ class Favorites(resource.DirectoryResource):
 
 		self.children = []
 
-		for uri in ResourceProvider.favorites:
+		# for uri in ResourceProvider.favorites:
+		for uri in self.users:
 
 			try:
 

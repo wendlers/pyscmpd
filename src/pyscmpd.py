@@ -37,22 +37,20 @@ try:
 
 	# TODO: do not hardcode favorites :-)
 	favorites =  [ 
-		"griz", 
-		"betamaxx",
-		"freudeamtanzen", 
-		"barelylegit", 
-		"maddecent", 
-		"therealmccheese",
-		"yellowmice",
+			{ 
+				"name" : "test", 
+				"users" : [ "griz", "betamaxx", "freudeamtanzen", ]
+			},
+			{
+				"name" : "more",
+				"users" : [ "barelylegit", "maddecent", "therealmccheese", "yellowmice", ]
+			},
 		]
 
 	mpd = scmpd.ScMpdServerDaemon(favorites)
 
 	mainloop = gobject.MainLoop()
 	mainloop.run()
-
-#	while mpd.wait(1) : 
-#		pass
 
 except KeyboardInterrupt:
 
