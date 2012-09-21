@@ -25,45 +25,114 @@ import logging
 import gobject
 import pyscmpd.scmpd as scmpd
 
+from ConfigParser import SafeConfigParser
+
+PYSCMPD_VERSION="0.0.1"
+
 gobject.threads_init()
 
-mpd = None
-mainloop = None
+class PyScMpd():
+
+	mpd 		= None
+	mainloop 	= None
+	favorites	= None 
+	port		= 9900
+
+	def __init__(self):
+
+		self.favorites = []
+
+	def __del__(self):
+
+		if not self.mpd == None:
+			self.mpd.quit()
+
+		if not self.mainloop == None:
+			self.mainloop.quit()
+
+	def readConfig(self, cfgFile):
+
+		parser = SafeConfigParser()
+
+		try:
+			parser.read(cfgFile)
+
+			if parser.has_section("server"):
+
+				if parser.has_option("server", "port"):
+					self.port = parser.getint("server", "port")	
+
+			
+			if parser.has_section("logging"):
+
+				level 	= "info"
+				logFile = None
+
+				if parser.has_option("logging", "level"):
+					level = parser.get("logging", "level")	
+
+				if parser.has_option("logging", "file"):
+					logFile = parser.get("logging", "file")	
+
+				numeric_level = getattr(logging, level.upper(), None)
+
+				if not isinstance(numeric_level, int):
+					raise ValueError('Invalid log level: %s' % loglevel)
+
+				if logFile == None:
+
+					logging.basicConfig(
+						level=numeric_level,
+						format='%(asctime)s %(levelname)-8s %(message)s',
+            	       	datefmt='%m-%d %H:%M',
+					)
+
+				else:
+
+					logging.basicConfig(
+						level=numeric_level,
+						format='%(asctime)s %(name)-3s %(levelname)-8s %(message)s',
+            	       	datefmt='%m-%d %H:%M',
+						filename=logFile,
+						filemode='w'
+					)
+
+			if parser.has_section("favorites"):
+		
+				for category, values in parser.items("favorites"):
+
+					usersRaw = values.split(",")
+					users = []
+
+					for user in usersRaw:
+						users.append(user.strip())
+
+					self.favorites.append({"name" : category.strip(), "users" : users})
+
+		except Exception as e:
+
+			logging.warn("Unable to parsre config [%s]: %s" % (cfgFile, `e`))
+
+	def run(self):
+
+		logging.info("pyscmpd v%s started" % PYSCMPD_VERSION)
+
+		mpd = scmpd.ScMpdServerDaemon(self.favorites, self.port)
+
+		self.mainloop = gobject.MainLoop()
+		self.mainloop.run()
 
 try:
 
-	# logging.basicConfig(level=logging.DEBUG)
-	logging.basicConfig(level=logging.INFO)
-
-	# TODO: do not hardcode favorites :-)
-	favorites =  [ 
-			{ 
-				"name" : "test", 
-				"users" : [ "griz", "betamaxx", "freudeamtanzen", ]
-			},
-			{
-				"name" : "more",
-				"users" : [ "barelylegit", "maddecent", "therealmccheese", "yellowmice", ]
-			},
-		]
-
-	mpd = scmpd.ScMpdServerDaemon(favorites)
-
-	mainloop = gobject.MainLoop()
-	mainloop.run()
+	pyscmpd = PyScMpd()
+	pyscmpd.readConfig("./etc/pyscmpd.conf")
+	pyscmpd.run()	
 
 except KeyboardInterrupt:
 
-	logging.info("Stopping SoundCloud MPD server")
+	logging.info("pyscmpd v%s ended" % PYSCMPD_VERSION)
 
 except Exception as e:
 
 	logging.error("Exception occurred: %s" % `e`)
 
-finally:
-
-	if not mpd == None:
-		mpd.quit()
-
-	if not mainloop == None:
-		mainloop.quit()

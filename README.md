@@ -15,6 +15,18 @@ Python based sound-cloud music server talking MPD protocol.
 NOTE: only basic MPD server daemon available yet
 ------------------------------------------------
 
+Main features currently supported:
+
+* Browse predfined set of favorite users (see "etc/pyscmpd.conf")
+* Add tracks to current playlist
+* Play tracks from playlist
+* Change song order in current playlist
+* Remove somgs from playlist
+* Clear whole playlist
+* Start/stop/pause/resume songs
+* Controll volume
+* Elapsed song time and current songtime are transmitted to clients
+
 
 Project Directory Layout
 ------------------------
@@ -43,7 +55,7 @@ Install
 A complete installation of the pyscmpd is not supported yet. This section briefly describes what steps 
 are needed to make the "pyscmpd" runable from its project directory. 
 
-_On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)_
+__On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)__
 
 For the following steps, it is assumed, that `$HOME/src`is your working directory:
 
@@ -65,7 +77,7 @@ run the setup script
 	cd soundcloud-python
 	sudo python setup.py install
 	
-Note: internet connection is needed for this step, since the installer will go and fetch some dependencies from the net. 	
+__Note:__ internet connection is needed for this step, since the installer will go and fetch some dependencies from the net. 	
 
 *2) Install python-gst and dependencies*
 
@@ -97,7 +109,7 @@ Or for a GUI based client [sonata] (http://sonata.berlios.de/):
 
 	sudo apt-get install sonata
 	
-_On Other Linux Systems_
+__On Other Linux Systems__
 
 To be done ...
 
@@ -113,4 +125,5 @@ Then connect to the daemon on port "9900", e. g. with ncmcpp:
 
 	ncmpcpp -p 9900
 
-To change the list of your favorite users to browse, edit "favorites" in "./src/pympd.py". 
+__Note:__To change basic "pyscmpd" settings, or add the list of your favorite users to browse, edit __etc/pyscmpd.conf__.
+ 
