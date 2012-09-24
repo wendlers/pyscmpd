@@ -43,4 +43,7 @@ setup(name='pyscmpd',
 	requires = ['soundcloud(>=0.3.1)']
 )
 
+# FIXME:     
+# if not os.path.lexists(destFile):
+#    os.symlink(sourceFile, destFile)
 shutil.copy('pyscmpdctrl', '/usr/local/bin/pyscmpdctrl')
