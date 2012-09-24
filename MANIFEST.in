@@ -1,0 +1,4 @@
+include README.md LICENSE pyscmpd
+recursive-include extlib/python-mpd-server/mpdserver *.py
+recursive-include src *.py
+recursive-include etc *.conf 
