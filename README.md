@@ -117,13 +117,36 @@ To be done ...
 Usage
 -----
 
-In the main directory start "pyscmpd" with:
+In the main directory start "pyscmpd" daemon with:
 
-	./pyscmpd
+	./pyscmpd start
 
-Then connect to the daemon on port "9900", e. g. with ncmcpp:
+A default configuration is created under "~/.pyscmpd/pyscmp.conf". 
+
+The log output of the daemon could be viewd by:
+
+	tail -f ~/.pyscmpd/pyscmpd.log
+
+Now you should be able to connect to the daemons default port 9900, e. g. with ncmcpp:
 
 	ncmpcpp -p 9900
 
-__Note:__To change basic "pyscmpd" settings, or add the list of your favorite users to browse, edit __etc/pyscmpd.conf__.
- 
+To stop the daemon use:
+
+	./pyscmpd stop
+
+To change the basic "pyscmpd" settings, or add/modify the list of your favorite 
+users to browse, edit the "[favorites]" section in "~/.pyscmpd/pyscmp.conf". The
+format used for favorite users is:
+
+	 
+	<category>: <user1>, <user2>, ...
+
+<category> is then shown in the browser as toplevel folder containing all the users
+specified. 
+
+Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
+
+	./pyscmpd restart
+
+__Note:__ an example configuration could be found in "./etc/pyscmpd.conf".
