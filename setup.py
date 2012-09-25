@@ -51,3 +51,5 @@ linkDst = "/usr/local/bin/pysmpdctrl"
 
 if not os.path.lexists(linkDst):
 	os.symlink(linkSrc, linkDst)
+
+os.chmod(linkSrc, 0755)
