@@ -1,4 +1,7 @@
 #!/bin/bash
 
-DIST=$(python -c "from distutils.sysconfig import get_python_lib; print(get_python_lib(False, False, '/usr/local'))")
-python $DIST/pyscmpd/pyscmpdctrl.py $@
+LIB_DIR="./extlib/python-mpd-server:./src"
+
+export PYTHONPATH=$LIB_DIR
+
+python src/pyscmpd/pyscmpdctrl.py $@

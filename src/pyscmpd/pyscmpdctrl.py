@@ -1,3 +1,5 @@
+#!/usr/bin/python
+
 ##
 # This file is part of the carambot-usherpa project.
 #
@@ -57,7 +59,7 @@ try:
 	parser = argparse.ArgumentParser(description='Python Soundcloud Music Player Daemon "pyscmpd"')
 
 	parser.add_argument('command', metavar='COMMAD', type=str, 
-		help='Command to operate the daemon: start, stop, restart')
+		help='Command to operate the daemon: start, stop, restart, rmpid')
 
 	parser.add_argument('--foreground', dest="foreground", action='store_true', default=False, 
 		help='Run in foreground, do not fork')
@@ -70,19 +72,21 @@ try:
 
 	args = parser.parse_args()
 
-	if not args.command in ['start', 'stop', 'restart']:
+	if not args.command in ['start', 'stop', 'restart', 'rmpid']:
 		sys.stderr.write("Unknown command [%s]\n" % args.command)
  		sys.exit(1)
 		
 	prepare()
 
 	from pyscmpd.daemon import PyScMpd 
-
+	
 	pyscmpd = PyScMpd(args.pidfile)
 	pyscmpd.readConfig(args.conffile, args.foreground)
 
 	if args.command == "start":
-		logging.info("Starting daemon")
+
+		sys.stdout.write("Starting pyscmpd\n")
+		logging.info("Starting pyscmpd")
 
 		if args.foreground:
 			pyscmpd.run()
@@ -90,13 +94,20 @@ try:
 			pyscmpd.start()	
 
 	elif args.command == "stop":
-		logging.info("Stopping daemon")
+		sys.stdout.write("Stopping pyscmpd\n")
+		logging.info("Stopping pyscmpd")
 		pyscmpd.stop()	
 
 	elif args.command == "restart":
-		logging.info("Restarting daemon")
+		sys.stdout.write("Restarting pyscmpd\n")
+		logging.info("Restarting pyscmpd")
 		pyscmpd.restart()	
 
+	elif args.command == "rmpid":
+		sys.stdout.write("Removing stall PID: %s\n" % args.pidfile)
+		if os.path.exists(args.pidfile):
+			os.remove(args.pidfile)
+	
 except KeyboardInterrupt:
 	pass
 

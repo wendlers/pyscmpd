@@ -26,8 +26,10 @@ This file is part of the pyscmpd project. To install pyscmpd:
 
 '''
 
-import shutil
+import os
+
 from distutils.core import setup
+from distutils.sysconfig import get_python_lib
 
 setup(name='pyscmpd',
 	version='0.1',
@@ -43,7 +45,9 @@ setup(name='pyscmpd',
 	requires = ['soundcloud(>=0.3.1)']
 )
 
-# FIXME:     
-# if not os.path.lexists(destFile):
-#    os.symlink(sourceFile, destFile)
-shutil.copy('pyscmpdctrl', '/usr/local/bin/pyscmpdctrl')
+# Symlink starter
+linkSrc = "%s/pyscmpd/pyscmpdctrl.py" % get_python_lib(False, False, '/usr/local')
+linkDst = "/usr/local/bin/pysmpdctrl"
+
+if not os.path.lexists(linkDst):
+	os.symlink(linkSrc, linkDst)

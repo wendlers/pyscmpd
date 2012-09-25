@@ -66,7 +66,7 @@ class PyScMpd:
 
 		except OSError, e: 
 
-			logging.error("fork failed: %d (%s)\n" % (e.errno, e.strerror))
+			sys.stderr.write("Fork failed: %d (%s)\n" % (e.errno, e.strerror))
 			sys.exit(1)
 	
 		# decouple from parent environment
@@ -84,7 +84,7 @@ class PyScMpd:
 
 		except OSError, e: 
 
-			logging.error("fork failed: %d (%s)\n" % (e.errno, e.strerror))
+			sys.stderr.write("Fork failed: %d (%s)\n" % (e.errno, e.strerror))
 			sys.exit(1) 
 	
 		# redirect standard file descriptors
@@ -103,7 +103,7 @@ class PyScMpd:
 		atexit.register(self.delpid)
 		pid = str(os.getpid())
 		file(self.pidfile,'w+').write("%s\n" % pid)
-	
+
 	def delpid(self):
 
 		os.remove(self.pidfile)
@@ -123,7 +123,7 @@ class PyScMpd:
 	
 		if pid:
 
-			logging.error("Pidfile %s already exist. Daemon already running?" % self.pidfile)
+			sys.stderr.write("Pidfile %s already exist. Daemon already running?\n" % self.pidfile)
 			sys.exit(1)
 		
 		# Start the daemon
@@ -145,7 +145,7 @@ class PyScMpd:
 	
 		if not pid:
 
-			logging.error("Pidfile %s does not exist. Daemon not running?" % self.pidfile)
+			sys.stderr.write("Pidfile %s does not exist. Daemon not running?\n" % self.pidfile)
 			return 
 
 		# Try killing the daemon process	
@@ -163,7 +163,7 @@ class PyScMpd:
 				if os.path.exists(self.pidfile):
 					os.remove(self.pidfile)
 			else:
-				logging.warn(str(err))
+				sys.stderr.write(str(err))
 				sys.exit(1)
 
 	def restart(self):
@@ -176,7 +176,7 @@ class PyScMpd:
 		try:
 			with open(cfgFile): pass
 		except:
-			sys.stderr.write("Unable to open config-file [%s]\n" % cfgFile)
+			sys.stderr.write("Unable to open config-file: %s\n" % cfgFile)
 			sys.exit(1)
 		
 		parser = SafeConfigParser()
@@ -222,6 +222,8 @@ class PyScMpd:
 						filename=logFile,
 						filemode='a'
 					)
+					
+					sys.stdout.write("Logging to file: %s\n" % logFile)
 
 			if parser.has_section("favorites"):
 		

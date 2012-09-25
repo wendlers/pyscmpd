@@ -1,7 +1,0 @@
-#!/bin/bash
-
-LIB_DIR="./extlib/python-mpd-server:./src"
-
-export PYTHONPATH=$LIB_DIR
-
-python src/pyscmpd.py $@
