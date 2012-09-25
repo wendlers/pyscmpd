@@ -1,5 +1,10 @@
 #!/bin/bash
 
+##
+# NOTE: this script is only for testing pyscmpd
+# 		from within this project directory!
+##
+
 LIB_DIR="./extlib/python-mpd-server:./src"
 
 export PYTHONPATH=$LIB_DIR
