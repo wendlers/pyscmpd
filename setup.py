@@ -47,7 +47,7 @@ setup(name='pyscmpd',
 
 # Symlink starter
 linkSrc = "%s/pyscmpd/pyscmpdctrl.py" % get_python_lib(False, False, '/usr/local')
-linkDst = "/usr/local/bin/pysmpdctrl"
+linkDst = "/usr/local/bin/pyscmpdctrl"
 
 if not os.path.lexists(linkDst):
 	os.symlink(linkSrc, linkDst)
