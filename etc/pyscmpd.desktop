@@ -1,0 +1,8 @@
+[Desktop Entry]
+Name=pyscmpd
+Comment=Python based soundcloud player using the MPD protocol
+Exec=pyscmpdctrl restart 
+Icon=sound_section
+Terminal=false
+Type=Application
+Categories=Audio
