@@ -53,8 +53,42 @@ Prerequisites
 For more detailed install instructions see next chapter.
 
 
-Install
--------
+Quick Install Instructions
+--------------------------
+
+The following instructions describe in short, how to install "pyscmpd" on a raspberry pi
+with freshly installed raspian. For more detailed setup instructions see the next chapter.
+
+__Note:__ perform the following steps as user "pi".
+
+*1) Install missing debian packages*
+
+	sudo apt-get install git python-setuptools python-gst0.10 gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly gstreamer0.10-alsa jackd ncmpcpp
+
+*2) Install soundcloud python API*
+
+	sudo easy_install soundcloud
+
+*3) Install pysmpd*
+
+	mkdir $HOME/src
+	cd $HOME/src
+	git clone https://github.com/wendlers/pyscmpd.git
+	cd pyscmpd
+	sudo python setup.py install
+
+*4) Autostart pyscmpd with the desktop*
+
+	mkdir $HOME/.config/autostart
+	cp ./etc/pyscmpd.desktop $HOME/.config/autostart/.
+
+*5) Run daemon, connect to it*
+
+	pyscmpdctrl start
+	ncmpcpp -p 9900
+
+Detailed Install Instructions
+-----------------------------
 
 __On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)__
 
@@ -101,6 +135,22 @@ install pyscmpd:
 
 	cd pyscmpd
 	sudo python setup.py install
+
+*3.1) Optional: autostart daemon with LXDE*
+
+If you like to start "pyscmpd" with your LXDE desktop on a raspberry pi, you could create the file "pyscmpd.desktop" 
+under "$HOME/.config/autostart" with the following:
+
+	[Desktop Entry]
+	Name=pyscmpd
+	Comment=Python based soundcloud player using the MPD protocol
+	Exec=pyscmpdctrl restart 
+	Icon=sound_section
+	Terminal=false
+	Type=Application
+	Categories=Audio
+
+Next time your desktop is started, "pyscmpd" will also be started.
 
 *4) Get a decent MPD client*
 
