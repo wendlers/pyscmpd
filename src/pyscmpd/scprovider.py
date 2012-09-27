@@ -27,9 +27,10 @@ import soundcloud
 
 import pyscmpd.resource as resource
 
+from threading import Lock
+
 class ResourceProvider:
 
-	# favorites 	= None 
 	sc 			= None 
 	root 		= None
 
@@ -61,11 +62,14 @@ class Root(resource.DirectoryResource):
 
 class RandomUsers(resource.DirectoryResource):
 
+	retriveLock = None
+
 	def __init__(self):
 
 		resource.DirectoryResource.__init__(self, 0, "random", "random")
 
 		self.children = None 
+		self.retriveLock = Lock()
 
 	def getAllChildren(self):
 
@@ -76,27 +80,36 @@ class RandomUsers(resource.DirectoryResource):
 		
 	def retriveChildren(self):
 
+		self.retriveLock.acquire()
 		self.children = []
 
-		allUsers = ResourceProvider.sc.get("/users")
+		try:
+			allUsers = ResourceProvider.sc.get("/users")
 
-		for user in allUsers:
+			for user in allUsers:
 
-			try:
+				try:
 
-				u = User(user.id, user.uri, user.permalink, user.username, self.name)				
-				u.setMeta({"directory" : self.name + "/" + user.permalink})		
+					u = User(user.id, user.uri, user.permalink, user.username, self.name)				
+					u.setMeta({"directory" : self.name + "/" + user.permalink})		
 
-				self.addChild(u)
+					self.addChild(u)
 
-				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
-					(user.uri, user.id, user.permalink))
+					logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
+						(user.uri, user.id, user.permalink))
 
-			except Exception as e:
-				logging.warn("Unable to retrive data for URI %s" % uri)
+				except Exception as e:
+					logging.warn("Unable to retrive data for URI %s" % uri)
+		
+		except Exception as e:
+			logging.warn("Unable to retrive data for URI users")
+
+		finally:
+			self.retriveLock.release()
 
 class Favorites(resource.DirectoryResource):
 
+	retriveLock = None
 	users = None
 
 	def __init__(self, name, users):
@@ -108,8 +121,9 @@ class Favorites(resource.DirectoryResource):
 
 		self.setMeta({"directory" : name})
 
-		self.children 	= None 
-		self.users 		= users
+		self.children 	 = None 
+		self.users 		 = users
+		self.retriveLock = Lock()
 
 	def getAllChildren(self):
 
@@ -120,6 +134,7 @@ class Favorites(resource.DirectoryResource):
 		
 	def retriveChildren(self):
 
+		self.retriveLock.acquire()
 		self.children = []
 
 		for uri in self.users:
@@ -139,8 +154,11 @@ class Favorites(resource.DirectoryResource):
 
 				logging.warn("Unable to retrive data for URI %s" % uri)
 
+		self.retriveLock.release()
+
 class User(resource.DirectoryResource):
 
+	retriveLock = None
 	artist 		= None
 	category 	= None
 
@@ -151,7 +169,8 @@ class User(resource.DirectoryResource):
 
 		resource.DirectoryResource.__init__(self, resourceId, resourceLocation, name)
 
-		self.children = None 
+		self.children 	 = None 
+		self.retriveLock = Lock()
 
 	def getAllChildren(self):
 
@@ -162,6 +181,7 @@ class User(resource.DirectoryResource):
 	
 	def retriveChildren(self):
 
+		self.retriveLock.acquire()
 		self.children = []
 
 		try:
@@ -186,6 +206,8 @@ class User(resource.DirectoryResource):
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
 		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
+
+		self.retriveLock.release()
 
 class Track(resource.FileResource):
 
