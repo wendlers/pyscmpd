@@ -9,7 +9,8 @@ http://gpio.kaltpost.de/
 Introduction
 ------------
 
-Python based sound-cloud music server talking MPD protocol.
+Python based sound-cloud music server talking MPD protocol. This document
+describes the basic idea behind the architecture of "pyscmpd".
 
 
 Core Components and Layers
@@ -37,7 +38,7 @@ Core Components and Layers
 | player user interface MPD protocol 0.12.0                            |
 +----------------------------------------------------------------------+
 +-----------------------------------------------------------+ +--------+
-| player core                                               | |        |
+| gst player                                                | |        |
 +-----------------------------------------------------------+ |        |
 +------------------------------------------------+ +--------+ | python |
 | resource provider sound cloud                  | |        | | mpd    |
@@ -77,14 +78,19 @@ Thus, a browsable music hiarchie could be modeled. E.g. for soundcloud.com:
 
 Resource (root)
 |
-+- Directoy (soundcloud provider)
++- Directoy (name given by user, e.g. "deephouse")
+|  |
+|  +- Directory (soundcloud user, e.g. "GRiZ")
+|  |  |
+|  |  +- File (soundcloud track, e.g. "Rock N Roll")
+|  |  +- File (soundcloud track, e.g. "Too much trolling")
+|  |  +- File (soundcloud track, e.g. "No way")
+|  |
+|  +- Directory (soundcloud user)
+|     |
+|     +- File (soundcloud track)
+|
++- Directoy (name given by user, e.g. "electroswing")
    |
-   +- Directory (soundcloud user, e.g. "GRiZ")
-      |
-      +- Directory (souncloud user set (playlist), e.g. "Full Album")
-      |  |
-      |  +- File (soundcloud track, e.g. "Rock N Roll")
-      |  +- File (soundcloud track, e.g. "Too much trolling")
-      |
-      +- File (soundcloud track, e.g. "No way")
+   +- Directory (soundcloud user)
 

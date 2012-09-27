@@ -1,0 +1,68 @@
+pyscmpd
+========
+
+(c) 2012 Stefan Wendler
+sw@kaltpost.de
+http://gpio.kaltpost.de/
+
+
+Introduction
+------------
+
+Python based sound-cloud music server talking MPD protocol. This document describes
+some of the implementation details of "pyscmpd".
+
+
+Supported MPD Commands
+
+Command				Supported	MPD ver.	Description
+-----------------------------------------------------------------------------------------------------------
+clearerror			No						Clears the current error message in status
+currentsong			Yes						Displays the song info of the current song
+idle				No						Waits until there is a noteworthy change in 
+											one or more of MPD's subsystems.
+status				Yes						Reports the current status of the player and the volume level.
+stats				No						Displays statistics.
+consume				No			0.16		When consume is activated, each song played is 
+											removed from playlist.
+crossfade			No						Sets crossfading between songs.
+mixrampdb			No						Sets the threshold at which songs will be overlapped.
+mixrampdelay		No						Additional time subtracted from the overlap calculated 
+											by mixrampdb.	
+random				No						Sets random state.
+repeat				No						Sets repeat state.
+setvol				Yes						Sets volume.
+single				No						When single is activated, playback is stopped after 
+											current song.
+replay_gain_mode 	No			0.16		Sets the replay gain mode.
+replay_gain_status 	No			0.16		Prints replay gain options. 
+next				Yes						Plays next song in the playlist.
+pause				Yes						Toggles pause/resumes playing.
+play				Yes						Begins playing the playlist at song number.
+playid				Yes						Begins playing the playlist at song with id.
+previous			Yes						Plays previous song in the playlist.
+seek				No						Seeks to position of song nummber.
+seekid				No						Seeks to position of song with id.
+seekcur				No						Seeks to the position within the current song. 
+stop				Yes						Stops playing.
+add					Yes						Adds the file URI to the playlist.
+addid				Yes						Adds a song to the playlist and returns the song id.
+clear				Yes						Clears the current playlist
+delete				Yes (no ranges)			Deletes a song from the playlist.
+deleteid			Yes						Deletes a song from the playlist.
+move				Yes (no ranges)			Moves the song in the playlist.	
+moveid				Yes						Moves the song in the playlist.
+playlist			No						Displays the current playlist.
+playlistfind		No						Finds songs in the current playlist with strict matching.
+playlistid 			No						Displays a list of songs in the playlist.
+playlistinfo		Yes (no ranges)			Displays a list of all songs in the playlist.
+playlistsearch		No						Searches case-sensitively for partial matches in the 
+											current playlist.
+plchanges			No						Displays changed songs currently in the playlist.
+plchangesposid		No						As above but only returns positions and ids.
+prio				No						Set the priority of the specified songs. 
+prioid				No						Same as above but ueses ids.
+shuffle				No						Shuffle the current playlist.
+swap				No						Swap two songs.
+swapid				No						As above but ueses ids.
+
