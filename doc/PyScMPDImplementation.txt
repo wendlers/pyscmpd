@@ -13,7 +13,8 @@ Python based sound-cloud music server talking MPD protocol. This document descri
 some of the implementation details of "pyscmpd".
 
 
-Supported MPD Commands
+Currently Supported MPD Commands
+--------------------------------
 
 Command				Supported	MPD ver.	Description
 -----------------------------------------------------------------------------------------------------------
@@ -65,4 +66,47 @@ prioid				No						Same as above but ueses ids.
 shuffle				No						Shuffle the current playlist.
 swap				No						Swap two songs.
 swapid				No						As above but ueses ids.
+listplaylist		No						Lists the songs in the playlist.
+listplaylistinfo	No						Lists the songs with metadata in the playlist.
+listplaylists		No						Prints a list of the playlist directory.
+load				No						Loads the playlist into the current queue. 
+playlistadd			No						Adds track to a playlist.
+playlistclear		No						Clears a playlist.
+playlistdelete		No						Delete track from playlist.
+playlistmove		No						Move songe in playlist.
+rename				No						Rename a playlist.
+rm					No						Remove a playlist.
+save				No						Save a playlist.
+count				No						Counts the number of songs and their total playtime in the db.
+find				No						Fins songs in the db.
+findadd				No						Find songs in the db, add to playlist.
+list				No						Lists all tags of the specified type.
+listall				No						Lists all songs and directories in URI.
+listallinfo			No						Same as above but lists full info.
+lsinfo				Yes						Lists the contents of the directory URI.
+search				No						Same as find but case insensitive
+searchadd			No						Same as findadd but case insensitive
+searchaddpl			No						Same as above but adds to named playlist.
+update				No						Updates the music database.
+rescan				No						Same as update, but also rescans unmodified files.
+sticker 			No						Pieces of information attached to existing MPD objects.
+close				No						Closes the connection to MPD.
+kill				No						Kills MPD.
+password			Yes						Used for authentication with the server.
+ping				No						Does nothing but return "OK".
+disableoutput		No						Turns an output off.
+enableoutput		No						Turns an output on.
+outputs				Yes						Shows information about all outputs.
+config				No						Dumps configuration values.
+commands			No						Shows which commands the current user has access to.
+notcommands			Yes						Shows which commands the current user does not have access to.
+tagtypes			No						Shows a list of available song metadata.
+urlhandlers			No						Gets a list of available URL handlers.
+decoders			Yes						Print a list of decoder plugins.
+subscribe			No						Subscribe to a channel.
+unsubscribe			No						Unsubscribe from a channel.
+channels			No						Obtain a list of all channels. 
+readmessages		No						Reads messages for this client. 
+sendmessage			No						Send a message to the specified channel.
+
 
