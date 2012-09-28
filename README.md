@@ -18,6 +18,8 @@ NOTE: only basic MPD server daemon available yet
 Main features currently supported:
 
 * Browse predefined set of favorite users (see "~/.pyscmpd/pyscmpd.conf")
+* Browse a set of random users as provided by soundcloud API
+* Browse a set of random groups as provided by soundcloud API
 * Add tracks to current play-list
 * Play tracks from play-list
 * Change song order in current play-list
@@ -27,7 +29,7 @@ Main features currently supported:
 * Control volume
 * Elapsed song time and current song-time are transmitted to clients
 
-For a complete list of supported MPD commands see the [implementation docs] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt)
+For a complete list of supported MPD commands see the [implementation docs] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt).
 
 Project Directory Layout
 ------------------------
