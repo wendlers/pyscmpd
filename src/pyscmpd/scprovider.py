@@ -21,7 +21,6 @@
 This file is part of the pyscmpd project.
 '''
 
-import pickle
 import logging
 import soundcloud 
 
@@ -34,11 +33,11 @@ class ResourceProvider:
 	sc 			= None 
 	root 		= None
 
-	def __init__(self, favorites):
+	def __init__(self, favoriteUsers, favoriteGroups):
 
 		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
 
-		self.root = Root(favorites)
+		self.root = Root(favoriteUsers, favoriteGroups)
 
 	def getRoot(self):
 
@@ -46,7 +45,7 @@ class ResourceProvider:
 
 class Root(resource.DirectoryResource):
 
-	def __init__(self, favorites):
+	def __init__(self, favoriteUsers, favoriteGroups):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
@@ -56,11 +55,14 @@ class Root(resource.DirectoryResource):
 		ufav = resource.DirectoryResource(0, favgrp ,favgrp )
 		ufav.setMeta({"directory" : favgrp})		
 
-		for fav in favorites:
-			f = Favorites(fav["name"], fav["users"], favgrp)		
+		for fav in favoriteUsers:
+			f = FavoriteUsers(fav["name"], fav["users"], favgrp)		
 			ufav.addChild(f)
 
 		grps = Groups("random-groups")
+
+		for fav in favoriteGroups:
+			logging.info("Adding favorite group: %s" % fav)
 
 		self.addChild(ufav)
 		self.addChild(uall)
@@ -116,7 +118,7 @@ class Users(resource.DirectoryResource):
 		except Exception as e:
 			logging.warn("Unable to retrive data for URI users: %s" % `e`)
 
-class Favorites(resource.DirectoryResource):
+class FavoriteUsers(resource.DirectoryResource):
 
 	retriveLock = None
 	users 		= None

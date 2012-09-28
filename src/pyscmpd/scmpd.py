@@ -34,10 +34,10 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 	scroot  = None
 	player	= None
  
-	def __init__(self, favorites, serverPort = 9900):
+	def __init__(self, favoriteUsers, favoriteGroups, serverPort = 9900):
 		
 		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
-		ScMpdServerDaemon.scp 		= provider.ResourceProvider(favorites)
+		ScMpdServerDaemon.scp 		= provider.ResourceProvider(favoriteUsers, favoriteGroups)
 		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
 
 		mpdserver.MpdServerDaemon.__init__(self, serverPort)

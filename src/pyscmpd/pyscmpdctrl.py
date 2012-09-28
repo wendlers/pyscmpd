@@ -49,9 +49,11 @@ def prepare():
 		f.write("\n[logging]\n")
 		f.write("level=info\n")
 		f.write("file=%s\n" % DEF_LOG_FILE) 
-		f.write("\n[favorites]\n")
+		f.write("\n[favorite-users]\n")
 		f.write("gethoswing : maddecent, barelylegit\n")
 		f.write("electrosoul: griz\n")
+		f.write("\n[favorite-groups]\n")
+		f.write("groups: deep-house-4, minimal-tech-hous\n")
 		f.close()
 
 try:

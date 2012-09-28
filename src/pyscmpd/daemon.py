@@ -38,22 +38,26 @@ gobject.threads_init()
 
 class PyScMpd:
 
-	stdin		= None
-	stdout 		= None
-	stderr		= None
-	pidfile		= None
-	mpd 		= None
-	mainloop 	= None
-	favorites	= None 
-	port		= 9900
+	stdin			= None
+	stdout 			= None
+	stderr			= None
+	pidfile			= None
+	mpd 			= None
+	mainloop 		= None
+	port			= 9900
+
+	favoriteUsers	= None 
+	favoriteGroups	= None 
 
 	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
 
-		self.stdin = stdin
-		self.stdout = stdout
-		self.stderr = stderr
-		self.pidfile = pidfile
-		self.favorites = []
+		self.stdin 			= stdin
+		self.stdout 		= stdout
+		self.stderr 		= stderr
+		self.pidfile 		= pidfile
+
+		self.favoriteUsers 	= []
+		self.favoriteGroups	= []
 
 	def daemonize(self):
 
@@ -219,9 +223,9 @@ class PyScMpd:
 					
 					sys.stdout.write("Logging to file: %s\n" % logFile)
 
-			if parser.has_section("favorites"):
+			if parser.has_section("favorite-users"):
 		
-				for category, values in parser.items("favorites"):
+				for category, values in parser.items("favorite-users"):
 
 					usersRaw = values.split(",")
 					users = []
@@ -229,7 +233,15 @@ class PyScMpd:
 					for user in usersRaw:
 						users.append(user.strip())
 
-					self.favorites.append({"name" : category.strip(), "users" : users})
+					self.favoriteUsers.append({"name" : category.strip(), "users" : users})
+
+			if parser.has_option("favorite-groups", "groups"):
+		
+				groupsRaw = parser.get("favorite-groups", "groups").split(",") 
+				groups = []
+
+				for group in groupsRaw:
+					self.favoriteGroups.append(group.strip())
 
 		except Exception as e:
 
@@ -239,7 +251,7 @@ class PyScMpd:
 	def run(self):
 
 		logging.info("pyscmpd v%s started" % PYSCMPD_VERSION)
-		mpd = scmpd.ScMpdServerDaemon(self.favorites, self.port)
+		mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, self.port)
 
 		self.mainloop = gobject.MainLoop()
 		self.mainloop.run()
