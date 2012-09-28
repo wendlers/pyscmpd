@@ -24,7 +24,7 @@ idle                No                      Waits until there is a noteworthy ch
                                             one or more of MPD's subsystems.
 status              Yes                     Reports the current status of the player and the volume level.
 stats               No                      Displays statistics.
-consume             No         0.16		    When consume is activated, each song played is 
+consume             No         0.16			When consume is activated, each song played is 
                                             removed from playlist.
 crossfade           No                      Sets crossfading between songs.
 mixrampdb           No                      Sets the threshold at which songs will be overlapped.
@@ -78,10 +78,10 @@ rename              No                      Rename a playlist.
 rm                  No                      Remove a playlist.
 save                No                      Save a playlist.
 count               No                      Counts the number of songs and their total playtime in the db.
-find				No                      Fins songs in the db.
-findadd				No                      Find songs in the db, add to playlist.
-list				No                      Lists all tags of the specified type.
-listall				No                      Lists all songs and directories in URI.
+find                No                      Fins songs in the db.
+findadd             No                      Find songs in the db, add to playlist.
+list                No                      Lists all tags of the specified type.
+listall             No                      Lists all songs and directories in URI.
 listallinfo         No                      Same as above but lists full info.
 lsinfo              Yes                     Lists the contents of the directory URI.
 search              No                      Same as find but case insensitive
