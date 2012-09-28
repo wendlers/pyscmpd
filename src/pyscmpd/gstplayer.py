@@ -115,14 +115,38 @@ class GstPlayer(resource.DirectoryResource):
 				(filePos, len(self.children)))
 			return 
 
-		c = self.children[filePos]
+		cur = self.currentSong()
+		c 	= self.children[filePos]
+
+		if not cur == None and cur.getId() == c.getId():
+			self.stop()
+
 		self.delChild(c)
+
+		# update position of current song
+		if self.currentSongNumber > -1:
+			self.currentSongNumber = self.getResourcePosInPlaylist(
+				cur,
+				self.children)
 
 	def deleteId(self, fileId):
 
+		cur = self.currentSong()
+
 		for c in self.children:
 			if c.getId() == fileId:
+
+				if not cur == None and cur.getId() == c.getId():
+					self.stop()
+
 				self.delChild(c)
+
+				# update position of current song
+				if self.currentSongNumber > -1:
+					self.currentSongNumber = self.getResourcePosInPlaylist(
+						cur,
+						self.children)
+
 				return
 
 		logging.error("No file with id [%d] in playlist" % fileId)
@@ -193,13 +217,13 @@ class GstPlayer(resource.DirectoryResource):
 				return 
 
 			# work on local copy
-			children = self.children
+			children = self.children[:]
 
 			for c in self.children:
 				if c.getId() == fileIdFrom:
 
-					children.insert(filePosTo, c)
 					children.remove(c)
+					children.insert(filePosTo, c)
 
 					# update position of current song
 					if self.currentSongNumber > -1:
