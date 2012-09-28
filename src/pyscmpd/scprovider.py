@@ -50,16 +50,17 @@ class Root(resource.DirectoryResource):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
-		uall = Users("users")
+		uall = Users("random-users")
 
-		ufav = resource.DirectoryResource(0, "favorites", "favorites")
-		ufav.setMeta({"directory" : "favorites"})		
+		favgrp = "favorite-users"
+		ufav = resource.DirectoryResource(0, favgrp ,favgrp )
+		ufav.setMeta({"directory" : favgrp})		
 
 		for fav in favorites:
-			f = Favorites(fav["name"], fav["users"], "favorites")		
+			f = Favorites(fav["name"], fav["users"], favgrp)		
 			ufav.addChild(f)
 
-		grps = Groups("groups")
+		grps = Groups("random-groups")
 
 		self.addChild(ufav)
 		self.addChild(uall)
@@ -172,7 +173,7 @@ class Groups(resource.DirectoryResource):
 
 	def __init__(self, category):
 
-		resource.DirectoryResource.__init__(self, 0, "groups", "groups")
+		resource.DirectoryResource.__init__(self, 0, category, category)
 
 		self.category	 = category
 		self.children 	 = None 

@@ -27,6 +27,7 @@ Main features currently supported:
 * Control volume
 * Elapsed song time and current song-time are transmitted to clients
 
+For a complete list of supported MPD commands see the [implementation docs] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt)
 
 Project Directory Layout
 ------------------------

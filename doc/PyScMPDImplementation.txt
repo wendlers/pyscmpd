@@ -16,97 +16,97 @@ some of the implementation details of "pyscmpd".
 Currently Supported MPD Commands
 --------------------------------
 
-Command				Supported	MPD ver.	Description
+Command             Supported  MPD ver.     Description
 -----------------------------------------------------------------------------------------------------------
-clearerror			No						Clears the current error message in status
-currentsong			Yes						Displays the song info of the current song
-idle				No						Waits until there is a noteworthy change in 
-											one or more of MPD's subsystems.
-status				Yes						Reports the current status of the player and the volume level.
-stats				No						Displays statistics.
-consume				No			0.16		When consume is activated, each song played is 
-											removed from playlist.
-crossfade			No						Sets crossfading between songs.
-mixrampdb			No						Sets the threshold at which songs will be overlapped.
-mixrampdelay		No						Additional time subtracted from the overlap calculated 
-											by mixrampdb.	
-random				No						Sets random state.
-repeat				No						Sets repeat state.
-setvol				Yes						Sets volume.
-single				No						When single is activated, playback is stopped after 
-											current song.
-replay_gain_mode 	No			0.16		Sets the replay gain mode.
-replay_gain_status 	No			0.16		Prints replay gain options. 
-next				Yes						Plays next song in the playlist.
-pause				Yes						Toggles pause/resumes playing.
-play				Yes						Begins playing the playlist at song number.
-playid				Yes						Begins playing the playlist at song with id.
-previous			Yes						Plays previous song in the playlist.
-seek				No						Seeks to position of song nummber.
-seekid				No						Seeks to position of song with id.
-seekcur				No						Seeks to the position within the current song. 
-stop				Yes						Stops playing.
-add					Yes						Adds the file URI to the playlist.
-addid				Yes						Adds a song to the playlist and returns the song id.
-clear				Yes						Clears the current playlist
-delete				Yes (no ranges)			Deletes a song from the playlist.
-deleteid			Yes						Deletes a song from the playlist.
-move				Yes (no ranges)			Moves the song in the playlist.	
-moveid				Yes						Moves the song in the playlist.
-playlist			No						Displays the current playlist.
-playlistfind		No						Finds songs in the current playlist with strict matching.
-playlistid 			No						Displays a list of songs in the playlist.
-playlistinfo		Yes (no ranges)			Displays a list of all songs in the playlist.
-playlistsearch		No						Searches case-sensitively for partial matches in the 
-											current playlist.
-plchanges			No						Displays changed songs currently in the playlist.
-plchangesposid		No						As above but only returns positions and ids.
-prio				No						Set the priority of the specified songs. 
-prioid				No						Same as above but ueses ids.
-shuffle				No						Shuffle the current playlist.
-swap				No						Swap two songs.
-swapid				No						As above but ueses ids.
-listplaylist		No						Lists the songs in the playlist.
-listplaylistinfo	No						Lists the songs with metadata in the playlist.
-listplaylists		No						Prints a list of the playlist directory.
-load				No						Loads the playlist into the current queue. 
-playlistadd			No						Adds track to a playlist.
-playlistclear		No						Clears a playlist.
-playlistdelete		No						Delete track from playlist.
-playlistmove		No						Move songe in playlist.
-rename				No						Rename a playlist.
-rm					No						Remove a playlist.
-save				No						Save a playlist.
-count				No						Counts the number of songs and their total playtime in the db.
-find				No						Fins songs in the db.
-findadd				No						Find songs in the db, add to playlist.
-list				No						Lists all tags of the specified type.
-listall				No						Lists all songs and directories in URI.
-listallinfo			No						Same as above but lists full info.
-lsinfo				Yes						Lists the contents of the directory URI.
-search				No						Same as find but case insensitive
-searchadd			No						Same as findadd but case insensitive
-searchaddpl			No						Same as above but adds to named playlist.
-update				No						Updates the music database.
-rescan				No						Same as update, but also rescans unmodified files.
-sticker 			No						Pieces of information attached to existing MPD objects.
-close				No						Closes the connection to MPD.
-kill				No						Kills MPD.
-password			Yes						Used for authentication with the server.
-ping				No						Does nothing but return "OK".
-disableoutput		No						Turns an output off.
-enableoutput		No						Turns an output on.
-outputs				Yes						Shows information about all outputs.
-config				No						Dumps configuration values.
-commands			No						Shows which commands the current user has access to.
-notcommands			Yes						Shows which commands the current user does not have access to.
-tagtypes			No						Shows a list of available song metadata.
-urlhandlers			No						Gets a list of available URL handlers.
-decoders			Yes						Print a list of decoder plugins.
-subscribe			No						Subscribe to a channel.
-unsubscribe			No						Unsubscribe from a channel.
-channels			No						Obtain a list of all channels. 
-readmessages		No						Reads messages for this client. 
-sendmessage			No						Send a message to the specified channel.
+clearerror          No                      Clears the current error message in status
+currentsong         Yes                     Displays the song info of the current song
+idle                No                      Waits until there is a noteworthy change in 
+                                            one or more of MPD's subsystems.
+status              Yes                     Reports the current status of the player and the volume level.
+stats               No                      Displays statistics.
+consume             No         0.16		    When consume is activated, each song played is 
+                                            removed from playlist.
+crossfade           No                      Sets crossfading between songs.
+mixrampdb           No                      Sets the threshold at which songs will be overlapped.
+mixrampdelay        No                      Additional time subtracted from the overlap calculated 
+                                            by mixrampdb.	
+random              No                      Sets random state.
+repeat              No                      Sets repeat state.
+setvol              Yes                     Sets volume.
+single              No                      When single is activated, playback is stopped after 
+                                            current song.
+replay_gain_mode    No          0.16        Sets the replay gain mode.
+replay_gain_status  No          0.16        Prints replay gain options. 
+next                Yes                     Plays next song in the playlist.
+pause               Yes                     Toggles pause/resumes playing.
+play                Yes                     Begins playing the playlist at song number.
+playid              Yes                     Begins playing the playlist at song with id.
+previous            Yes                     Plays previous song in the playlist.
+seek                No                      Seeks to position of song nummber.
+seekid              No                      Seeks to position of song with id.
+seekcur             No                      Seeks to the position within the current song. 
+stop                Yes                     Stops playing.
+add                 Yes                     Adds the file URI to the playlist.
+addid               Yes                     Adds a song to the playlist and returns the song id.
+clear               Yes                     Clears the current playlist
+delete              Yes (no ranges)         Deletes a song from the playlist.
+deleteid            Yes                     Deletes a song from the playlist.
+move                Yes (no ranges)         Moves the song in the playlist.	
+moveid              Yes                     Moves the song in the playlist.
+playlist            No                      Displays the current playlist.
+playlistfind        No                      Finds songs in the current playlist with strict matching.
+playlistid          No                      Displays a list of songs in the playlist.
+playlistinfo        Yes (no ranges)         Displays a list of all songs in the playlist.
+playlistsearch      No                      Searches case-sensitively for partial matches in the 
+                                            current playlist.
+plchanges           No                      Displays changed songs currently in the playlist.
+plchangesposid      No                      As above but only returns positions and ids.
+prio                No                      Set the priority of the specified songs. 
+prioid              No                      Same as above but ueses ids.
+shuffle             No                      Shuffle the current playlist.
+swap                No                      Swap two songs.
+swapid              No                      As above but ueses ids.
+listplaylist        No                      Lists the songs in the playlist.
+listplaylistinfo    No                      Lists the songs with metadata in the playlist.
+listplaylists       No                      Prints a list of the playlist directory.
+load                No                      Loads the playlist into the current queue. 
+playlistadd         No                      Adds track to a playlist.
+playlistclear       No                      Clears a playlist.
+playlistdelete      No                      Delete track from playlist.
+playlistmove        No                      Move songe in playlist.
+rename              No                      Rename a playlist.
+rm                  No                      Remove a playlist.
+save                No                      Save a playlist.
+count               No                      Counts the number of songs and their total playtime in the db.
+find				No                      Fins songs in the db.
+findadd				No                      Find songs in the db, add to playlist.
+list				No                      Lists all tags of the specified type.
+listall				No                      Lists all songs and directories in URI.
+listallinfo         No                      Same as above but lists full info.
+lsinfo              Yes                     Lists the contents of the directory URI.
+search              No                      Same as find but case insensitive
+searchadd           No                      Same as findadd but case insensitive
+searchaddpl         No                      Same as above but adds to named playlist.
+update              No                      Updates the music database.
+rescan              No                      Same as update, but also rescans unmodified files.
+sticker             No                      Pieces of information attached to existing MPD objects.
+close               No                      Closes the connection to MPD.
+kill                No                      Kills MPD.
+password            Yes                     Used for authentication with the server.
+ping                No                      Does nothing but return "OK".
+disableoutput       No                      Turns an output off.
+enableoutput        No                      Turns an output on.
+outputs             Yes                     Shows information about all outputs.
+config              No                      Dumps configuration values.
+commands            No                      Shows which commands the current user has access to.
+notcommands         Yes                     Shows which commands the current user does not have access to.
+tagtypes            No                      Shows a list of available song metadata.
+urlhandlers         No                      Gets a list of available URL handlers.
+decoders            Yes                     Print a list of decoder plugins.
+subscribe           No                      Subscribe to a channel.
+unsubscribe         No                      Unsubscribe from a channel.
+channels            No                      Obtain a list of all channels. 
+readmessages        No                      Reads messages for this client. 
+sendmessage         No						Send a message to the specified channel.
 
 
