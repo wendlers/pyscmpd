@@ -73,14 +73,17 @@ class RandomUsers(resource.DirectoryResource):
 
 	def getAllChildren(self):
 
+		self.retriveLock.acquire()
+
 		if self.children == None:
 			self.retriveChildren()
+
+		self.retriveLock.release()
 
 		return self.children
 		
 	def retriveChildren(self):
 
-		self.retriveLock.acquire()
 		self.children = []
 
 		try:
@@ -90,13 +93,14 @@ class RandomUsers(resource.DirectoryResource):
 
 				try:
 
-					u = User(user.id, user.uri, user.permalink, user.username, self.name)				
+					u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, 
+						user.username, self.name)
 					u.setMeta({"directory" : self.name + "/" + user.permalink})		
 
 					self.addChild(u)
 
 					logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
-						(user.uri, user.id, user.permalink))
+						(user.uri, u.getId(), user.permalink))
 
 				except Exception as e:
 					logging.warn("Unable to retrive data for URI %s" % uri)
@@ -104,13 +108,10 @@ class RandomUsers(resource.DirectoryResource):
 		except Exception as e:
 			logging.warn("Unable to retrive data for URI users")
 
-		finally:
-			self.retriveLock.release()
-
 class Favorites(resource.DirectoryResource):
 
 	retriveLock = None
-	users = None
+	users 		= None
 
 	def __init__(self, name, users):
 
@@ -127,14 +128,17 @@ class Favorites(resource.DirectoryResource):
 
 	def getAllChildren(self):
 
+		self.retriveLock.acquire()
+
 		if self.children == None:
 			self.retriveChildren()
+
+		self.retriveLock.release()
 
 		return self.children
 		
 	def retriveChildren(self):
 
-		self.retriveLock.acquire()
 		self.children = []
 
 		for uri in self.users:
@@ -142,19 +146,15 @@ class Favorites(resource.DirectoryResource):
 			try:
 
 				user = ResourceProvider.sc.get("/users/" + uri)
-				u = User(user.id, user.uri, user.permalink, user.username, self.name)				
+				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, self.name)
 				u.setMeta({"directory" : self.name + "/" + user.permalink})		
-
 				self.addChild(u)
 
 				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
-					(uri, user.id, user.permalink))
+					(uri, u.getId(), user.permalink))
 
 			except Exception as e:
-
 				logging.warn("Unable to retrive data for URI %s" % uri)
-
-		self.retriveLock.release()
 
 class User(resource.DirectoryResource):
 
@@ -174,14 +174,17 @@ class User(resource.DirectoryResource):
 
 	def getAllChildren(self):
 
+		self.retriveLock.acquire()
+
 		if self.children == None:
 			self.retriveChildren()
+
+		self.retriveLock.release()
 
 		return self.children
 	
 	def retriveChildren(self):
 
-		self.retriveLock.acquire()
 		self.children = []
 
 		try:
@@ -190,7 +193,7 @@ class User(resource.DirectoryResource):
 			tracks = ResourceProvider.sc.get(self.location + "/tracks")
 
 			for track in tracks:
-				tr = Track(track.id, track.stream_url, track.permalink)
+				tr = Track(resource.ID_OFFSET + track.id, track.stream_url, track.permalink)
 				tr.setMeta({
 					"file" : self.category + "/" + self.name + "/" + track.permalink,
 					"Artist" : self.artist, 
@@ -199,15 +202,13 @@ class User(resource.DirectoryResource):
 
 				self.addChild(tr)
 
-				logging.debug("Added tracki to use [%s]: %s" % (self.getName(), tr.__str__()))
+				logging.info("Added track to use [%s]: %s" % (self.getName(), tr.__str__()))
 
 		except Exception as e:
 
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
 		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
-
-		self.retriveLock.release()
 
 class Track(resource.FileResource):
 

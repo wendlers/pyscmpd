@@ -23,6 +23,8 @@ This file is part of the pyscmpd project.
 
 import logging
 
+ID_OFFSET = 100000000
+
 class Resource:
 
 	TYPE_GENERIC	= 0

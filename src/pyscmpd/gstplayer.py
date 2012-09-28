@@ -127,6 +127,19 @@ class GstPlayer(resource.DirectoryResource):
 
 		logging.error("No file with id [%d] in playlist" % fileId)
 
+	def getResourcePosInPlaylist(self, res, playlist):
+
+		p = 0 
+
+		for r in playlist:
+	
+			if res.getId() == r.getId():
+				return p
+
+			p = p + 1 
+
+		return -1
+
 	def move(self, filePosFrom, filePosTo):
 
 		logging.info("move posFrom %d, posTo %d" % (filePosFrom, filePosTo))
@@ -141,34 +154,64 @@ class GstPlayer(resource.DirectoryResource):
 				(filePosTo, len(self.children)))
 			return 
 
-		c = self.children[filePosFrom]
+		# work on local copy
+		children = self.children[:]
+
+		c = children[filePosFrom]
 
 		logging.info("File on posFrom: %s" % c.__str__())
 
-		self.children.remove(c)
-		self.children.insert(filePosTo, c)
+		children.remove(c)
+		children.insert(filePosTo, c)
+
+		# update position of current song
+		if self.currentSongNumber > -1:
+			self.currentSongNumber = self.getResourcePosInPlaylist(
+				self.currentSong(),
+				children)
+
+		self.children = children
 		self.playlistVersion = self.playlistVersion + 1
 
 	def moveId(self, fileIdFrom, filePosTo):
 		
-		self.move(fileIdFrom, filePosTo)
+		if fileIdFrom <= resource.ID_OFFSET:
 
-		'''
-		logging.info("moveId idFrom %d, posTo %d" % (fileIdFrom, filePosTo))
+			logging.info("using moveId/move mixup workaround")
 
-		if filePosTo > len(self.children): 
-			logging.error("Invalid filePosTo (%d) given. Only %d files in current playlist." % 
-				(filePosTo, len(self.children)))
-			return 
+			# I think client is doing wrong and mixes up moveId with move
+			# (ncmpcpp does this). Anyway, trying to workaorund this ...
+			self.move(fileIdFrom, filePosTo)
 
-		for c in self.children:
-			if c.getId() == fileIdFrom:
-				self.children.insert(filePosTo, c)
-				self.delChild(c)
-				return
+		else:
 
-		logging.error("No file with id [%d] in playlist" % fileIdFrom)
-		'''
+			logging.info("moveId idFrom %d, posTo %d" % (fileIdFrom, filePosTo))
+
+			if filePosTo > len(self.children): 
+				logging.error("Invalid filePosTo (%d) given. Only %d files in current playlist." % 
+					(filePosTo, len(self.children)))
+				return 
+
+			# work on local copy
+			children = self.children
+
+			for c in self.children:
+				if c.getId() == fileIdFrom:
+
+					children.insert(filePosTo, c)
+					children.remove(c)
+
+					# update position of current song
+					if self.currentSongNumber > -1:
+						self.currentSongNumber = self.getResourcePosInPlaylist(
+							self.currentSong(),
+							children)
+
+					self.children = children
+					self.playlistVersion = self.playlistVersion + 1
+					return
+
+			logging.error("No file with id [%d] in playlist" % fileIdFrom)
 
 	def pause(self):
 
