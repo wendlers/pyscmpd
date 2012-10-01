@@ -53,7 +53,7 @@ def prepare():
 		f.write("gethoswing : maddecent, barelylegit\n")
 		f.write("electrosoul: griz\n")
 		f.write("\n[favorite-groups]\n")
-		f.write("groups: deep-house-4, minimal-tech-hous\n")
+		f.write("groups: deep-house-4, minimal-tech-house\n")
 		f.close()
 
 try:

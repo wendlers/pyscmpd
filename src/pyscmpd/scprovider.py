@@ -51,22 +51,30 @@ class Root(resource.DirectoryResource):
 
 		uall = Users("random-users")
 
-		favgrp = "favorite-users"
-		ufav = resource.DirectoryResource(0, favgrp ,favgrp )
-		ufav.setMeta({"directory" : favgrp})		
+		ufavgrp = "favorite-users"
+		ufav = resource.DirectoryResource(0, ufavgrp, ufavgrp )
+		ufav.setMeta({"directory" : ufavgrp})		
 
 		for fav in favoriteUsers:
-			f = FavoriteUsers(fav["name"], fav["users"], favgrp)		
+			f = FavoriteUsers(fav["name"], fav["users"], ufavgrp)		
 			ufav.addChild(f)
 
 		grps = Groups("random-groups")
 
+
+		gfavgrp = "favorite-groups"
+		gfav = resource.DirectoryResource(0, gfavgrp, gfavgrp )
+		gfav.setMeta({"directory" : gfavgrp})		
+
 		for fav in favoriteGroups:
 			logging.info("Adding favorite group: %s" % fav)
+			f = FavoriteGroup(fav, gfavgrp)
+			gfav.addChild(f)
 
 		self.addChild(ufav)
 		self.addChild(uall)
 		self.addChild(grps)
+		self.addChild(gfav)
 
 class Users(resource.DirectoryResource):
 
@@ -158,7 +166,8 @@ class FavoriteUsers(resource.DirectoryResource):
 			try:
 
 				user = ResourceProvider.sc.get("/users/" + uri)
-				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, self.category + "/" + self.name)
+				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, 
+					self.category + "/" + self.name)
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
 				self.addChild(u)
 
@@ -167,6 +176,56 @@ class FavoriteUsers(resource.DirectoryResource):
 
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s: %s" % (uri, `e`))
+
+class FavoriteGroup(resource.DirectoryResource):
+
+	retriveLock = None
+	category	= None
+
+	def __init__(self, name, category):
+
+		resource.DirectoryResource.__init__(self, 0, name, name)
+
+		self.category	 = category
+		self.children 	 = None 
+		self.retriveLock = Lock()
+
+		self.setMeta({"directory" : self.category + "/" + self.name})
+
+	def getAllChildren(self):
+
+		self.retriveLock.acquire()
+
+		if self.children == None:
+			self.retriveChildren()
+
+		self.retriveLock.release()
+
+		return self.children
+		
+	def retriveChildren(self):
+
+		self.children = []
+
+		try:
+
+			group = ResourceProvider.sc.get("/resolve", url="http://soundcloud.com/groups/%s" %
+					self.name)
+
+			users = ResourceProvider.sc.get("/groups/%d/users" % group.id)
+
+			for user in users:
+				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, 
+					user.username, self.category + "/" + self.name)
+				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
+				self.addChild(u)
+
+				logging.info("successfully retrieved user data: id=%d; name=%s" % 
+					(u.getId(), user.permalink))
+
+		except Exception as e:
+			logging.warn("Unable to retrive data for groups: %s" % `e`)
+
 
 class Groups(resource.DirectoryResource):
 
@@ -199,7 +258,7 @@ class Groups(resource.DirectoryResource):
 		self.children = []
 
 		try:
-
+				
 			groups = ResourceProvider.sc.get("/groups")
 
 			for group in groups:
