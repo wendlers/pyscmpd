@@ -9,7 +9,7 @@ http://gpio.kaltpost.de/
 Introduction
 ------------
 
-Python based sound-cloud music server talking MPD protocol.
+Python based sound-cloud music server talking the [MPD] (http://www.musicpd.org/doc/protocol/) protocol.
 
 
 NOTE: only basic MPD server daemon available yet
