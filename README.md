@@ -227,7 +227,7 @@ in the URL when browsing a group. E.g. "deep-house-4".
 The following shows a complete sample for the two mentioned section as seen in *pysmpc.conf*:
 
 	[favorite-users]
-	gethoswing : maddecent, barelylegit
+	ghettoswing : maddecent, barelylegit
 	electrosoul: griz
 	deep-minimal-house: grumoh
 	tech-house: beatkind, atmosphererecords
