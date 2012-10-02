@@ -207,18 +207,37 @@ By doing so, log messages are printed to "stdout", while the log-file specified 
 Customize
 ---------
 
-To modify the list of your favorite users to browse, edit the "[favorites]" section 
+To modify the list of your favorite users to browse, edit the "[favorite-users]" section 
 in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
 	 
 	category: user1, user2, ...
 
-*category* is then shown in the browser as top-level folder containing all the users
-specified. *userN* is the user name of a soundcloud user as shown in the URL. E.g. 
-"griz" for [GRiZ] (http://soundcloud.com/griz). 
+*category* is then shown in the browser as subfolder folder of "favorite-users" folder, containing all 
+the users specified. *userN* is the user name of a soundcloud user as shown in the URL. E.g. 
+"griz" for [GRiZ] (http://soundcloud.com/griz).
 
-Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
+To define the favaorite groups shown in the browser, add them under the "[favorite-groups]" section
+in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
+
+	groups: group1, group2, ...
+	
+*groupN* is shon in the broser as subfolder of the "favorite-groups" folder. *groupN* is the group name as shown 
+in the URL when browsing a group. E.g. "deep-house-4".
+
+The following shows a complete sample for the two mentioned section as seen in *pysmpc.conf*:
+
+	[favorite-users]
+	gethoswing : maddecent, barelylegit
+	electrosoul: griz
+	deep-minimal-house: grumoh
+	tech-house: beatkind, atmosphererecords
+
+	[favorite-groups]
+	groups: deep-house-4, minimal-tech-house, swing-fever-electroswing-group, ghettoswing-and-swingstep
+
+__NOte:__ Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
 
 	pyscmpdctrl restart
 
-__Note:__ an example configuration could be found in "./etc/pyscmpd.conf".
+__Note:__ an example configuration could be found in the project directory under "./etc/pyscmpd.conf".
 
