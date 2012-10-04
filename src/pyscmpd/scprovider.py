@@ -33,11 +33,11 @@ class ResourceProvider:
 	sc 			= None 
 	root 		= None
 
-	def __init__(self, favoriteUsers, favoriteGroups):
+	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites):
 
 		ResourceProvider.sc = soundcloud.Client(client_id='aa13bebc2d26491f7f8d1e77ae996a64')
 
-		self.root = Root(favoriteUsers, favoriteGroups)
+		self.root = Root(favoriteUsers, favoriteGroups, favoriteFavorites)
 
 	def getRoot(self):
 
@@ -45,14 +45,14 @@ class ResourceProvider:
 
 class Root(resource.DirectoryResource):
 
-	def __init__(self, favoriteUsers, favoriteGroups):
+	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
 		uall = Users("random-users")
 
 		ufavgrp = "favorite-users"
-		ufav = resource.DirectoryResource(0, ufavgrp, ufavgrp )
+		ufav = resource.DirectoryResource(0, ufavgrp, ufavgrp)
 		ufav.setMeta({"directory" : ufavgrp})		
 
 		for fav in favoriteUsers:
@@ -63,7 +63,7 @@ class Root(resource.DirectoryResource):
 
 
 		gfavgrp = "favorite-groups"
-		gfav = resource.DirectoryResource(0, gfavgrp, gfavgrp )
+		gfav = resource.DirectoryResource(0, gfavgrp, gfavgrp)
 		gfav.setMeta({"directory" : gfavgrp})		
 
 		for fav in favoriteGroups:
@@ -71,10 +71,24 @@ class Root(resource.DirectoryResource):
 			f = FavoriteGroup(fav, gfavgrp)
 			gfav.addChild(f)
 
+		
+		'''
+		ffavgrp = "favorite-favorites"
+		ffav = FavoriteFavorites(favoriteFavorites, ffavgrp)
+		'''
+
+		ffavgrp = "favorite-favorites"
+		ffav = resource.DirectoryResource(0, ffavgrp, ffavgrp)
+		ffav.setMeta({"directory" : ffavgrp})		
+
+		for fav in favoriteFavorites:
+			logging.info("Adding favorite favorite: %s" % fav)
+
 		self.addChild(ufav)
 		self.addChild(uall)
 		self.addChild(grps)
 		self.addChild(gfav)
+		self.addChild(ffav)
 
 class Users(resource.DirectoryResource):
 
@@ -128,9 +142,9 @@ class Users(resource.DirectoryResource):
 
 class FavoriteUsers(resource.DirectoryResource):
 
-	retriveLock = None
-	users 		= None
-	category	= None
+	retriveLock 	= None
+	users 			= None
+	category		= None
 
 	def __init__(self, name, users, category):
 
@@ -138,13 +152,12 @@ class FavoriteUsers(resource.DirectoryResource):
 			(name, users))
 
 		resource.DirectoryResource.__init__(self, 0, name, name)
+		self.setMeta({"directory" : category + "/" + name})
 
 		self.category	 = category
 		self.children 	 = None 
 		self.users 		 = users
 		self.retriveLock = Lock()
-
-		self.setMeta({"directory" : self.category + "/" + self.name})
 
 	def getAllChildren(self):
 
@@ -166,14 +179,16 @@ class FavoriteUsers(resource.DirectoryResource):
 			try:
 
 				user = ResourceProvider.sc.get("/users/" + uri)
+
 				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, 
 					self.category + "/" + self.name)
-				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
-				self.addChild(u)
 
+				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
+				
+				self.addChild(u)
 				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" % 
 					(uri, u.getId(), user.permalink))
-
+			
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s: %s" % (uri, `e`))
 

@@ -54,6 +54,8 @@ def prepare():
 		f.write("electrosoul: griz\n")
 		f.write("\n[favorite-groups]\n")
 		f.write("groups: deep-house-4, minimal-tech-house\n")
+		f.write("\n[favorite-favorites]\n")
+		f.write("favorites: kaltpost\n") 
 		f.close()
 
 try:

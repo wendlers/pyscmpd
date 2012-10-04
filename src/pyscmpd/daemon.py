@@ -46,8 +46,9 @@ class PyScMpd:
 	mainloop 		= None
 	port			= 9900
 
-	favoriteUsers	= None 
-	favoriteGroups	= None 
+	favoriteUsers		= None 
+	favoriteGroups		= None 
+	favoriteFavorites	= None 
 
 	def __init__(self, pidfile, stdin='/dev/null', stdout='/dev/null', stderr='/dev/null'):
 
@@ -56,8 +57,9 @@ class PyScMpd:
 		self.stderr 		= stderr
 		self.pidfile 		= pidfile
 
-		self.favoriteUsers 	= []
-		self.favoriteGroups	= []
+		self.favoriteUsers 		= []
+		self.favoriteGroups		= []
+		self.favoriteFavorites	= []
 
 	def daemonize(self):
 
@@ -243,6 +245,14 @@ class PyScMpd:
 				for group in groupsRaw:
 					self.favoriteGroups.append(group.strip())
 
+			if parser.has_option("favorite-favorites", "favorites"):
+		
+				favoritesRaw = parser.get("favorite-favorites", "favorites").split(",") 
+				favorites = []
+
+				for favorite in favoritesRaw:
+					self.favoriteFavorites.append(favorite.strip())
+
 		except Exception as e:
 
 			logging.warn("Unable to parsre config [%s]: %s" % (cfgFile, `e`))
@@ -251,7 +261,8 @@ class PyScMpd:
 	def run(self):
 
 		logging.info("pyscmpd v%s started" % PYSCMPD_VERSION)
-		mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, self.port)
+		mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, 
+			self.favoriteFavorites, self.port)
 
 		self.mainloop = gobject.MainLoop()
 		self.mainloop.run()
