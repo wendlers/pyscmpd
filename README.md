@@ -17,7 +17,9 @@ NOTE: only basic MPD server daemon available yet
 
 Main features currently supported:
 
-* Browse predefined set of favorite users (see "~/.pyscmpd/pyscmpd.conf")
+* Browse predefined set of favorite users  (see "~/.pyscmpd/pyscmpd.conf")
+* Browse predefined set of favorite groups (see "~/.pyscmpd/pyscmpd.conf")
+* Browse the favorite tracks of a predefined set of users (see "~/.pyscmpd/pyscmpd.conf")
 * Browse a set of random users as provided by soundcloud API
 * Browse a set of random groups as provided by soundcloud API
 * Add tracks to current play-list
@@ -207,22 +209,38 @@ By doing so, log messages are printed to "stdout", while the log-file specified 
 Customize
 ---------
 
-To modify the list of your favorite users to browse, edit the "[favorite-users]" section 
+__Favorite Users__
+
+To modify the list of your favorite users to browse, edit the *[favorite-users]* section 
 in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
 	 
 	category: user1, user2, ...
 
-*category* is then shown in the browser as subfolder folder of "favorite-users" folder, containing all 
+*category* is then shown in the browser as subfolder folder of *favorite-users* folder, containing all 
 the users specified. *userN* is the user name of a soundcloud user as shown in the URL. E.g. 
 "griz" for [GRiZ] (http://soundcloud.com/griz).
 
-To define the favaorite groups shown in the browser, add them under the "[favorite-groups]" section
+__Favorite Groups__
+
+To define the favaorite groups shown in the browser, add them under the *[favorite-groups]* section
 in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
 
 	groups: group1, group2, ...
 	
-*groupN* is shon in the broser as subfolder of the "favorite-groups" folder. *groupN* is the group name as shown 
+*groupN* is shon in the broser as subfolder of the *favorite-groups* folder. *groupN* is the group name as shown 
 in the URL when browsing a group. E.g. "deep-house-4".
+
+__Favorite Favorites__
+
+To define a set of users whos favorite tracks are listed under the *favorite-favorites* folder, add them to the 
+*[favorite-favorites]* section in  "~/.pyscmpd/pyscmp.conf". The format used for favorite favorites is:
+
+	favorites: <user1>, <user2>, ...
+	
+For each *userN*, a subfolder of *favorite-favorites* is shown in the browser. When *userN* is opened, all the favorite
+tracks of that user are listed.
+	
+__Complete Example__
 
 The following shows a complete sample for the two mentioned section as seen in *pysmpc.conf*:
 
@@ -234,6 +252,9 @@ The following shows a complete sample for the two mentioned section as seen in *
 
 	[favorite-groups]
 	groups: deep-house-4, minimal-tech-house, swing-fever-electroswing-group, ghettoswing-and-swingstep
+
+	[favorite-favorites]
+	favorites: kaltpost 
 
 __NOte:__ Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
 

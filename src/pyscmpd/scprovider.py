@@ -71,18 +71,14 @@ class Root(resource.DirectoryResource):
 			f = FavoriteGroup(fav, gfavgrp)
 			gfav.addChild(f)
 
-		
-		'''
-		ffavgrp = "favorite-favorites"
-		ffav = FavoriteFavorites(favoriteFavorites, ffavgrp)
-		'''
-
 		ffavgrp = "favorite-favorites"
 		ffav = resource.DirectoryResource(0, ffavgrp, ffavgrp)
 		ffav.setMeta({"directory" : ffavgrp})		
 
 		for fav in favoriteFavorites:
-			logging.info("Adding favorite favorite: %s" % fav)
+			u = User(0, "/users/" + fav + "/favorites", fav, fav, ffavgrp)
+			u.setMeta({"directory" : ffavgrp + "/" + fav})		
+			ffav.addChild(u)
 
 		self.addChild(ufav)
 		self.addChild(uall)
@@ -125,7 +121,7 @@ class Users(resource.DirectoryResource):
 
 				try:
 
-					u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, 
+					u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, 
 						user.username, self.name)
 					u.setMeta({"directory" : self.name + "/" + user.permalink})		
 
@@ -180,7 +176,7 @@ class FavoriteUsers(resource.DirectoryResource):
 
 				user = ResourceProvider.sc.get("/users/" + uri)
 
-				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, 
+				u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, user.username, 
 					self.category + "/" + self.name)
 
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
@@ -230,7 +226,7 @@ class FavoriteGroup(resource.DirectoryResource):
 			users = ResourceProvider.sc.get("/groups/%d/users" % group.id)
 
 			for user in users:
-				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, 
+				u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, 
 					user.username, self.category + "/" + self.name)
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
 				self.addChild(u)
@@ -326,7 +322,8 @@ class Group(resource.DirectoryResource):
 			users = ResourceProvider.sc.get("/groups/%d/users" % groupId)
 
 			for user in users:
-				u = User(resource.ID_OFFSET + user.id, user.uri, user.permalink, user.username, self.category + "/" + self.name)
+				u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, user.username, 
+						self.category + "/" + self.name)
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
 				self.addChild(u)
 
@@ -369,8 +366,8 @@ class User(resource.DirectoryResource):
 
 		try:
 
-			logging.debug("Trying to get tracks for user [%s] with uri [%s]" % (self.name, self.location))
-			tracks = ResourceProvider.sc.get(self.location + "/tracks")
+			logging.info("Trying to get tracks for user [%s] with uri [%s]" % (self.name, self.location))
+			tracks = ResourceProvider.sc.get(self.location)
 
 			for track in tracks:
 				tr = Track(resource.ID_OFFSET + track.id, track.stream_url, track.permalink)
@@ -382,13 +379,13 @@ class User(resource.DirectoryResource):
 
 				self.addChild(tr)
 
-				logging.info("Added track to use [%s]: %s" % (self.getName(), tr.__str__()))
+				logging.info("Added track to user [%s]: %s" % (self.getName(), tr.__str__()))
 
 		except Exception as e:
 
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
-		logging.info("successfully retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
+		logging.info("retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
 
 class Track(resource.FileResource):
 
