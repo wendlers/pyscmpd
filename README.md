@@ -256,7 +256,7 @@ The following shows a complete sample for the two mentioned section as seen in *
 	[favorite-favorites]
 	favorites: kaltpost 
 
-__NOte:__ Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
+__Note:__ Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be restarted by:
 
 	pyscmpdctrl restart
 
