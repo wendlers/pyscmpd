@@ -260,5 +260,5 @@ __Note:__ Each time "~/.pyscmpd/pyscmp.conf" is modified, the daemon needs to be
 
 	pyscmpdctrl restart
 
-__Note:__ an example configuration could be found in the project directory under "./etc/pyscmpd.conf".
+__Note:__ an example configuration could be found in the project directory under [./etc/pyscmpd.conf] (https://github.com/wendlers/pyscmpd/blob/master/etc/pyscmpd.conf).
 
