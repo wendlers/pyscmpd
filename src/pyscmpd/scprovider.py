@@ -49,7 +49,7 @@ class Root(resource.DirectoryResource):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
-		uall = Users("random-users")
+		# uall = Users("random-users")
 
 		ufavgrp = "favorite-users"
 		ufav = resource.DirectoryResource(0, ufavgrp, ufavgrp)
@@ -59,8 +59,7 @@ class Root(resource.DirectoryResource):
 			f = FavoriteUsers(fav["name"], fav["users"], ufavgrp)		
 			ufav.addChild(f)
 
-		grps = Groups("random-groups")
-
+		# grps = Groups("random-groups")
 
 		gfavgrp = "favorite-groups"
 		gfav = resource.DirectoryResource(0, gfavgrp, gfavgrp)
@@ -81,11 +80,12 @@ class Root(resource.DirectoryResource):
 			ffav.addChild(u)
 
 		self.addChild(ufav)
-		self.addChild(uall)
-		self.addChild(grps)
+		# self.addChild(uall)
+		# self.addChild(grps)
 		self.addChild(gfav)
 		self.addChild(ffav)
 
+'''
 class Users(resource.DirectoryResource):
 
 	retriveLock = None
@@ -135,6 +135,7 @@ class Users(resource.DirectoryResource):
 		
 		except Exception as e:
 			logging.warn("Unable to retrive data for URI users: %s" % `e`)
+'''
 
 class FavoriteUsers(resource.DirectoryResource):
 
@@ -237,7 +238,7 @@ class FavoriteGroup(resource.DirectoryResource):
 		except Exception as e:
 			logging.warn("Unable to retrive data for groups: %s" % `e`)
 
-
+'''
 class Groups(resource.DirectoryResource):
 
 	retriveLock = None
@@ -283,6 +284,7 @@ class Groups(resource.DirectoryResource):
 
 		except Exception as e:
 			logging.warn("Unable to retrive data for groups: %s" % `e`)
+'''
 
 class Group(resource.DirectoryResource):
 

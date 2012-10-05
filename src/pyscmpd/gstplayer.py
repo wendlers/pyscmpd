@@ -23,7 +23,12 @@ This file is part of the pyscmpd project.
 
 import logging
 import gst
+import os
+
 import pyscmpd.resource as resource
+import pyscmpd.respersist as persist
+
+from config import *
 
 class GstPlayer(resource.DirectoryResource):
 
@@ -304,3 +309,45 @@ class GstPlayer(resource.DirectoryResource):
 	def getVolume(self):
 		return int(self.player.get_property('volume') * 100)
 		
+	def storePlaylist(self, plName = CURR_PLAYLIST_KEY):
+
+		logging.info("Storing playlist with key: %s" % plName)
+		
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		p.store(plName, self.children)
+
+	def retrivePlaylist(self, plName = CURR_PLAYLIST_KEY, makeCurrent = True):
+
+		logging.info("Retriving playlist with key: %s" % plName)
+
+		self.stop()
+		self.currentSongNumber = -1 
+		self.currentSongId = -1 
+
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		c = p.retrive(plName)
+			
+		if not c == None and makeCurrent:
+			self.children = c
+			self.playlistVersion = self.playlistVersion + 1
+
+		return c
+
+	def listPlaylists(self):
+	
+		plFiles = []
+
+		try:
+			for (root, dirs, files) in os.walk(PLAYLIST_DIR):
+
+				logging.info("found playlist files: %s" % files)
+
+				for f in files: 
+					plFiles.append(f)
+			
+			return plFiles 
+
+		except Exception as e:
+			logging.warn("Unable to retrive playlists: %s" % `e`)
+
+		return plFiles 

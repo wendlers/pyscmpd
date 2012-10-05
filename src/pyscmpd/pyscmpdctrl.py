@@ -59,6 +59,9 @@ def prepare():
 		f.write("favorites: kaltpost\n") 
 		f.close()
 
+pyscmpd = None
+args 	= None
+
 try:
 
 	parser = argparse.ArgumentParser(description='Python Soundcloud Music Player Daemon "pyscmpd"')
@@ -114,7 +117,12 @@ try:
 			os.remove(args.pidfile)
 	
 except KeyboardInterrupt:
-	pass
+
+	try:
+		if args.foreground: 
+			pyscmpd.mpd.exitHandler()
+	except:
+		pass
 
 except Exception as e:
 

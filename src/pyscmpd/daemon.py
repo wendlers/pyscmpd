@@ -261,7 +261,7 @@ class PyScMpd:
 	def run(self):
 
 		logging.info("pyscmpd v%s started" % PYSCMPD_VERSION)
-		mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, 
+		self.mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, 
 			self.favoriteFavorites, self.port)
 
 		self.mainloop = gobject.MainLoop()

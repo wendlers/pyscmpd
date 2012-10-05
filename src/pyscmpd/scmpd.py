@@ -28,9 +28,6 @@ import soundcloud
 
 import pyscmpd.scprovider as provider 
 import pyscmpd.gstplayer as gstplayer 
-import pyscmpd.respersist as persist
-
-from config import *
 
 class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 
@@ -40,28 +37,11 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
  
 	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites, serverPort = 9900):
 		
-		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
+		ScMpdServerDaemon.player = gstplayer.GstPlayer() 
+		ScMpdServerDaemon.player.retrivePlaylist()
 
-		# try to read last playlist
-		try:
-
-			logging.info("Restoring last playlist")
-			p = persist.ResourceFilePersistence(PLAYLIST_DIR)
-			c = p.retrive(CURR_PLAYLIST_KEY)
-			
-			if not c == None:
-				ScMpdServerDaemon.player.children = c
-				ScMpdServerDaemon.player.playlistVersion = 1
-
-			logging.info("Done restoring last playlist")
-
-		except Exception as e:
-
-			logging.warn("Unable to read last playlist: %s" % `e`)
-
-		ScMpdServerDaemon.scp 		= provider.ResourceProvider(favoriteUsers, favoriteGroups, 
-										favoriteFavorites)
-		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
+		ScMpdServerDaemon.scp = provider.ResourceProvider(favoriteUsers, favoriteGroups, favoriteFavorites)
+		ScMpdServerDaemon.scroot = ScMpdServerDaemon.scp.getRoot()
 
 		mpdserver.MpdServerDaemon.__init__(self, serverPort)
 
@@ -81,20 +61,17 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(SetVol)
 		self.requestHandler.RegisterCommand(mpdserver.Move)
 		self.requestHandler.RegisterCommand(mpdserver.MoveId)
+		self.requestHandler.RegisterCommand(Save)
+		self.requestHandler.RegisterCommand(Load)
+		self.requestHandler.RegisterCommand(ListPlaylistInfo)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
 		signal.signal(signal.SIGTERM, self.exitHandler)
 
-	def exitHandler(self, signal, func = None):
-
-		logging.info("Ending server daemon. Persisting current playlist")
+	def exitHandler(self, signal = 0, func = None):
 		
-		c = ScMpdServerDaemon.player.getAllChildren()
-		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
-		p.store(CURR_PLAYLIST_KEY, c)
-		
-		logging.info("Done persisting current playlist")
+		ScMpdServerDaemon.player.storePlaylist()
 		exit(0)
 
 class Play(mpdserver.Play):
@@ -196,6 +173,7 @@ class LsInfo(mpdserver.LsInfo):
 			logging.warn("[%s] is not a directory" % r.getName())
 			return i
 
+		# process 'directory'
 		for e in r.getAllChildren():
 
 			logging.debug("LsInfo sending item: %s/%s" % (self.directory, e.__str__()))
@@ -208,7 +186,45 @@ class LsInfo(mpdserver.LsInfo):
 				i.append(("Title", e.getMeta("Title")))
 				i.append(("Time", int(e.getMeta("Time") % 1000)))
  
+		# also list 'playlists'
+		if self.directory == None:
+
+			for pl in ScMpdServerDaemon.player.listPlaylists():
+				i.append(("playlist", pl))
+ 
 		return i 
+
+class ListPlaylistInfo(mpdserver.ListPlaylistInfo): 
+
+	playlistName = None
+
+	def handle_args(self, playlistName):
+		logging.info("ListPlaylistInfo for: %s" % playlistName)
+		self.playlistName = playlistName
+	
+	def songs(self):
+
+		pl 	= []
+		i 	= 0
+		p   = ScMpdServerDaemon.player.retrivePlaylist(self.playlistName, False)
+		l 	= len(p)
+
+		for t in p: 
+			logging.info("Track: %s" % t.__str__())
+			s = mpdserver.MpdPlaylistSong(
+				playlistPosition = i,
+				artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
+				title = t.getMeta("Title").encode('ASCII', 'ignore'), 
+				file = t.getMeta("file").encode('ASCII', 'ignore'),
+				track = "%d/%d" % (i + 1, l),
+				time = "%d" % (t.getMeta("Time") / 1000),
+				songId = t.getId())
+
+			i = i + 1
+
+			pl.append(s)
+
+		return pl 
 
 class Add(mpdserver.Add):
 
@@ -237,7 +253,7 @@ class AddId(mpdserver.AddId):
 		t = ScMpdServerDaemon.scroot.getChildByPath(song)
 
 		if t == None:
-			logging.error("Track [%s] not found in directory [%s]" % (track, user))
+			logging.error("Track [%s] not found" % song)
 			return
 
 		ScMpdServerDaemon.player.addChild(t)
@@ -316,3 +332,14 @@ class Status(mpdserver.Status):
 				playlistSongId = ScMpdServerDaemon.player.currentSongId)
 
 		return self.helper_status_stop()
+
+class Save(mpdserver.Save):
+
+	def handle_args(self, playlistName):
+		ScMpdServerDaemon.player.storePlaylist(playlistName)
+
+class Load(mpdserver.Load):
+
+	def handle_args(self, playlistName):
+		ScMpdServerDaemon.player.retrivePlaylist(playlistName)
+

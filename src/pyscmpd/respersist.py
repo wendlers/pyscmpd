@@ -36,7 +36,7 @@ class ResourceFilePersistence:
 
 		try:	
 
-			f = open("%s/%s.dump" % (self.baseDir, key), "wb")
+			f = open("%s/%s" % (self.baseDir, key), "wb")
 			pickle.dump(obj, f)
 
 		except Exception as e:
@@ -50,10 +50,11 @@ class ResourceFilePersistence:
 	def retrive(self, key):
 
 		obj = None
+		f = None
 
 		try:	
 
-			f = open("%s/%s.dump" % (self.baseDir, key), "rb")
+			f = open("%s/%s" % (self.baseDir, key), "rb")
 			obj = pickle.load(f)
 
 		except Exception as e:
@@ -62,7 +63,8 @@ class ResourceFilePersistence:
 
 		finally:
 
-			f.close()
+			if not f == None:
+				f.close()
 
 		return obj
 
