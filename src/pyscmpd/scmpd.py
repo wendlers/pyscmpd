@@ -53,7 +53,7 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 				ScMpdServerDaemon.player.children = c
 				ScMpdServerDaemon.player.playlistVersion = 1
 
-			logging.info("Done restoring last playlist: %s" % `c`)
+			logging.info("Done restoring last playlist")
 
 		except Exception as e:
 
