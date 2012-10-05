@@ -28,16 +28,17 @@ import sys
 import argparse
 import os
 
-USER_WORK_DIR	=	("%s/.pyscmpd" 		% os.getenv("HOME"))
-DEF_PID_FILE	=	("%s/pyscmpd.pid" 	% USER_WORK_DIR)
-DEF_CONF_FILE	=	("%s/pyscmpd.conf" 	% USER_WORK_DIR)
-DEF_LOG_FILE	= 	("%s/pyscmpd.log" 	% USER_WORK_DIR)
+from config import *
 
 def prepare():
 
 	if not os.path.exists(USER_WORK_DIR):
 		print("Note: pyscmpd working dir created: %s" % USER_WORK_DIR)
 		os.makedirs(USER_WORK_DIR)
+
+	if not os.path.exists(PLAYLIST_DIR):
+		print("Note: pyscmpd playlist dir created: %s" % PLAYLIST_DIR)
+		os.makedirs(PLAYLIST_DIR)
 
 	if not os.path.exists(DEF_CONF_FILE):
 		print("Note: pyscmpd default config created: %s" % DEF_CONF_FILE)

@@ -21,12 +21,16 @@
 This file is part of the pyscmpd project.
 '''
 
+import signal
 import logging
 import mpdserver
 import soundcloud
 
 import pyscmpd.scprovider as provider 
 import pyscmpd.gstplayer as gstplayer 
+import pyscmpd.respersist as persist
+
+from config import *
 
 class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 
@@ -37,6 +41,24 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites, serverPort = 9900):
 		
 		ScMpdServerDaemon.player 	= gstplayer.GstPlayer() 
+
+		# try to read last playlist
+		try:
+
+			logging.info("Restoring last playlist")
+			p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+			c = p.retrive(CURR_PLAYLIST_KEY)
+			
+			if not c == None:
+				ScMpdServerDaemon.player.children = c
+				ScMpdServerDaemon.player.playlistVersion = 1
+
+			logging.info("Done restoring last playlist: %s" % `c`)
+
+		except Exception as e:
+
+			logging.warn("Unable to read last playlist: %s" % `e`)
+
 		ScMpdServerDaemon.scp 		= provider.ResourceProvider(favoriteUsers, favoriteGroups, 
 										favoriteFavorites)
 		ScMpdServerDaemon.scroot 	= ScMpdServerDaemon.scp.getRoot()
@@ -61,6 +83,19 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(mpdserver.MoveId)
 
 		self.requestHandler.Playlist = MpdPlaylist
+
+		signal.signal(signal.SIGTERM, self.exitHandler)
+
+	def exitHandler(self, signal, func = None):
+
+		logging.info("Ending server daemon. Persisting current playlist")
+		
+		c = ScMpdServerDaemon.player.getAllChildren()
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		p.store(CURR_PLAYLIST_KEY, c)
+		
+		logging.info("Done persisting current playlist")
+		exit(0)
 
 class Play(mpdserver.Play):
 
