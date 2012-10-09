@@ -237,21 +237,29 @@ class PyScMpd:
 
 					self.favoriteUsers.append({"name" : category.strip(), "users" : users})
 
-			if parser.has_option("favorite-groups", "groups"):
+			if parser.has_section("favorite-groups"):
 		
-				groupsRaw = parser.get("favorite-groups", "groups").split(",") 
-				groups = []
+				for category, values in parser.items("favorite-groups"):
 
-				for group in groupsRaw:
-					self.favoriteGroups.append(group.strip())
+					groupsRaw = values.split(",") 
+					groups = []
 
-			if parser.has_option("favorite-favorites", "favorites"):
+					for group in groupsRaw:
+						groups.append(group.strip())
+
+					self.favoriteGroups.append({"name" : category.strip(), "groups" : groups})
+
+			if parser.has_section("favorite-favorites"):
 		
-				favoritesRaw = parser.get("favorite-favorites", "favorites").split(",") 
-				favorites = []
+				for category, values in parser.items("favorite-favorites"):
 
-				for favorite in favoritesRaw:
-					self.favoriteFavorites.append(favorite.strip())
+					favoritesRaw = values.split(",") 
+					favorites = []
+
+					for favorite in favoritesRaw:
+						favorites.append(favorite.strip())
+
+					self.favoriteFavorites.append({"name" : category.strip(), "users" : favorites})
 
 		except Exception as e:
 

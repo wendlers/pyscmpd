@@ -120,7 +120,7 @@ class DirectoryResource(Resource):
 		while True:
 			(l, s, r) = p.partition("/")
 
-			logging.info("Consuming path [%s]/[%s]" % (l, r))
+			logging.debug("Consuming path [%s]/[%s]" % (l, r))
 
 			if l == "" or c == None or not c.getType() == Resource.TYPE_DIRECTORY:
 				return None

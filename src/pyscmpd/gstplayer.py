@@ -81,7 +81,7 @@ class GstPlayer(resource.DirectoryResource):
 
 		f = self.children[filePos]
 
-		logging.info("Playing file at playlist pos %d: %s" % (filePos, f.__str__()))
+		logging.info("Playing file at playlist pos %d: %s" % (filePos, f.getName()))
 
 		self.player.set_state(gst.STATE_NULL)
 		self.player.set_property('uri', f.getStreamUri())
@@ -171,7 +171,7 @@ class GstPlayer(resource.DirectoryResource):
 
 	def move(self, filePosFrom, filePosTo):
 
-		logging.info("move posFrom %d, posTo %d" % (filePosFrom, filePosTo))
+		logging.debug("Move posFrom %d, posTo %d" % (filePosFrom, filePosTo))
 
 		if filePosFrom > len(self.children): 
 			logging.error("Invalid filePosFrom (%d) given. Only %d files in current playlist." % 
@@ -188,7 +188,7 @@ class GstPlayer(resource.DirectoryResource):
 
 		c = children[filePosFrom]
 
-		logging.info("File on posFrom: %s" % c.__str__())
+		logging.debug("File on posFrom: %s" % c.__str__())
 
 		children.remove(c)
 		children.insert(filePosTo, c)
@@ -206,7 +206,7 @@ class GstPlayer(resource.DirectoryResource):
 		
 		if fileIdFrom <= resource.ID_OFFSET:
 
-			logging.info("using moveId/move mixup workaround")
+			logging.debug("Using moveId/move mixup workaround")
 
 			# I think client is doing wrong and mixes up moveId with move
 			# (ncmpcpp does this). Anyway, trying to workaorund this ...
@@ -214,7 +214,7 @@ class GstPlayer(resource.DirectoryResource):
 
 		else:
 
-			logging.info("moveId idFrom %d, posTo %d" % (fileIdFrom, filePosTo))
+			logging.debug("moveId idFrom %d, posTo %d" % (fileIdFrom, filePosTo))
 
 			if filePosTo > len(self.children): 
 				logging.error("Invalid filePosTo (%d) given. Only %d files in current playlist." % 
@@ -340,7 +340,7 @@ class GstPlayer(resource.DirectoryResource):
 		try:
 			for (root, dirs, files) in os.walk(PLAYLIST_DIR):
 
-				logging.info("found playlist files: %s" % files)
+				logging.debug("Found playlist files: %s" % files)
 
 				for f in files: 
 					plFiles.append(f)

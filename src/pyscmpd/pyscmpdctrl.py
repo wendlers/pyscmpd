@@ -51,12 +51,12 @@ def prepare():
 		f.write("level=info\n")
 		f.write("file=%s\n" % DEF_LOG_FILE) 
 		f.write("\n[favorite-users]\n")
-		f.write("gethoswing : maddecent, barelylegit\n")
+		f.write("electroswing : maddecent, barelylegit\n")
 		f.write("electrosoul: griz\n")
 		f.write("\n[favorite-groups]\n")
-		f.write("groups: deep-house-4, minimal-tech-house\n")
+		f.write("house: deep-house-4, minimal-tech-house\n")
 		f.write("\n[favorite-favorites]\n")
-		f.write("favorites: kaltpost\n") 
+		f.write("me: kaltpost\n") 
 		f.close()
 
 pyscmpd = None

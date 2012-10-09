@@ -210,7 +210,7 @@ class ListPlaylistInfo(mpdserver.ListPlaylistInfo):
 		l 	= len(p)
 
 		for t in p: 
-			logging.info("Track: %s" % t.__str__())
+			logging.debug("Track: %s" % t.__str__())
 			s = mpdserver.MpdPlaylistSong(
 				playlistPosition = i,
 				artist = t.getMeta("Artist").encode('ASCII', 'ignore'), 
@@ -260,7 +260,7 @@ class AddId(mpdserver.AddId):
 		
 		self.uniqueId = t.getId()
 
-		logging.info("Successfully added song: %s" % t.__str__())
+		logging.debug("Successfully added song: %s" % t.__str__())
 
 	def items(self):
 		return [("id", self.uniqueId)]
