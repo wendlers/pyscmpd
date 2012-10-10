@@ -169,6 +169,19 @@ class GstPlayer(resource.DirectoryResource):
 
 		return -1
 
+	def getIdPosInPlaylist(self, resId, playlist):
+
+		p = 0 
+
+		for r in playlist:
+	
+			if resId == r.getId():
+				return p
+
+			p = p + 1 
+
+		return -1
+
 	def move(self, filePosFrom, filePosTo):
 
 		logging.debug("Move posFrom %d, posTo %d" % (filePosFrom, filePosTo))

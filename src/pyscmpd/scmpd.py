@@ -169,7 +169,7 @@ class LsInfo(mpdserver.LsInfo):
 		else:
 			r = ScMpdServerDaemon.scroot.getChildByPath(self.directory)
 
-		if not r.getType() == 1:
+		if r == None or not r.getType() == 1:
 			logging.warn("[%s] is not a directory" % r.getName())
 			return i
 
@@ -240,7 +240,7 @@ class Add(mpdserver.Add):
 
 		ScMpdServerDaemon.player.addChild(t)
 		
-		logging.info("Successfully added song: %s" % t.__str__())
+		logging.info("Successfully added song: %s" % t.getName())
 
 class AddId(mpdserver.AddId):
 
@@ -268,7 +268,11 @@ class AddId(mpdserver.AddId):
 
 class MpdPlaylist(mpdserver.MpdPlaylist):
 
-    def handlePlaylist(self):
+	def songIdToPosition(self, id):
+
+		return ScMpdServerDaemon.player.getIdPosInPlaylist(id, ScMpdServerDaemon.player.children)
+
+	def handlePlaylist(self):
 
 		# TODO: only recreate list if player indicates new playlist version
 
@@ -294,19 +298,19 @@ class MpdPlaylist(mpdserver.MpdPlaylist):
 
 		return pl 
 
-    def version(self):
+	def version(self):
 		return ScMpdServerDaemon.player.playlistVersion 
 
-    def move(self,fromPosition,toPosition):
+	def move(self,fromPosition,toPosition):
 		ScMpdServerDaemon.player.moveId(fromPosition, toPosition)
 
-    def moveId(self,fromId,toPosition):
+	def moveId(self,fromId,toPosition):
 		ScMpdServerDaemon.player.moveId(fromId, toPosition)
  
-    def delete(self, position):
+	def delete(self, position):
 		ScMpdServerDaemon.player.delete(position)
 
-    def deleteId(self, songId):
+	def deleteId(self, songId):
 		ScMpdServerDaemon.player.deleteId(songId)
 
 class Status(mpdserver.Status):

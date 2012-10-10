@@ -67,16 +67,16 @@ shuffle             No                      Shuffle the current playlist.
 swap                No                      Swap two songs.
 swapid              No                      As above but ueses ids.
 listplaylist        No                      Lists the songs in the playlist.
-listplaylistinfo    No                      Lists the songs with metadata in the playlist.
+listplaylistinfo    Yes                     Lists the songs with metadata in the playlist.
 listplaylists       No                      Prints a list of the playlist directory.
-load                No                      Loads the playlist into the current queue. 
+load                Yes                     Loads the playlist into the current queue. 
 playlistadd         No                      Adds track to a playlist.
 playlistclear       No                      Clears a playlist.
 playlistdelete      No                      Delete track from playlist.
 playlistmove        No                      Move songe in playlist.
 rename              No                      Rename a playlist.
 rm                  No                      Remove a playlist.
-save                No                      Save a playlist.
+save                Yes                     Save a playlist.
 count               No                      Counts the number of songs and their total playtime in the db.
 find                No                      Fins songs in the db.
 findadd             No                      Find songs in the db, add to playlist.

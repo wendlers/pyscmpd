@@ -49,6 +49,12 @@ class Root(resource.DirectoryResource):
 
 		resource.DirectoryResource.__init__(self, 0, "pyscmpd", "pyscmpd")
 
+		self.__populateFavoriteUsers(favoriteUsers)
+		self.__populateFavoriteGroups(favoriteGroups)
+		self.__populateFavoriteFavorites(favoriteFavorites)
+
+	def __populateFavoriteUsers(self, favoriteUsers):
+
 		ufavgrp = "users"
 		ufav = resource.DirectoryResource(0, ufavgrp, ufavgrp)
 		ufav.setMeta({"directory" : ufavgrp})		
@@ -57,13 +63,31 @@ class Root(resource.DirectoryResource):
 			f = FavoriteUsers(fav["name"], fav["users"], ufavgrp)		
 			ufav.addChild(f)
 
+		self.addChild(ufav)
+
+	def __populateFavoriteGroups(self, favoriteGroups):
+
 		gfavgrp = "groups"
 		gfav = resource.DirectoryResource(0, gfavgrp, gfavgrp)
 		gfav.setMeta({"directory" : gfavgrp})		
 
 		for fav in favoriteGroups:
-			f = FavoriteGroups(fav["name"], fav["groups"], gfavgrp)
-			gfav.addChild(f)
+
+			logging.info("Adding new favorites folder [%s] with groups [%s]" %
+				(fav["name"], fav["groups"]))
+
+			d = resource.DirectoryResource(0, gfavgrp + "/" + fav["name"], fav["name"])
+			d.setMeta({"directory" : gfavgrp + "/" + fav["name"]})		
+
+			for group in fav["groups"]:
+				g = Group(-1, group, gfavgrp + "/" + fav["name"])
+				d.addChild(g)
+			
+			gfav.addChild(d)
+
+		self.addChild(gfav)
+
+	def __populateFavoriteFavorites(self, favoriteFavorites):
 
 		ffavgrp = "favorites"
 		ffav = resource.DirectoryResource(0, ffavgrp, ffavgrp)
@@ -84,8 +108,6 @@ class Root(resource.DirectoryResource):
 
 			ffav.addChild(d)
 
-		self.addChild(ufav)
-		self.addChild(gfav)
 		self.addChild(ffav)
 
 class FavoriteUsers(resource.DirectoryResource):
@@ -120,7 +142,7 @@ class FavoriteUsers(resource.DirectoryResource):
 		
 	def retriveChildren(self):
 
-		self.children = []
+		children = []
 
 		for uname in self.users:
 
@@ -133,7 +155,7 @@ class FavoriteUsers(resource.DirectoryResource):
 
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
 				
-				self.addChild(u)
+				children.append(u)
 
 				logging.info("Successfully retrieved data for URI %s: id=%d; name=%s" % 
 					(uname, u.getId(), user.permalink))
@@ -141,62 +163,7 @@ class FavoriteUsers(resource.DirectoryResource):
 			except Exception as e:
 				logging.warn("Unable to retrive data for URI %s: %s" % (uname, `e`))
 
-class FavoriteGroups(resource.DirectoryResource):
-
-	retriveLock = None
-	groups		= None
-	category	= None
-
-	def __init__(self, name, groups, category):
-
-		logging.info("Adding new favorites folder [%s] with groups [%s]" %
-			(name, groups))
-
-		resource.DirectoryResource.__init__(self, 0, name, name)
-
-		self.category	 = category
-		self.children 	 = None 
-		self.groups		 = groups
-		self.retriveLock = Lock()
-
-		self.setMeta({"directory" : self.category + "/" + self.name})
-
-	def getAllChildren(self):
-
-		self.retriveLock.acquire()
-
-		if self.children == None:
-			self.retriveChildren()
-
-		self.retriveLock.release()
-
-		return self.children
-		
-	def retriveChildren(self):
-
-		self.children = []
-
-		for gname in self.groups:
-
-			try:
-
-				group = ResourceProvider.sc.get("/resolve", url="http://soundcloud.com/groups/%s" %
-						self.name)
-
-				users = ResourceProvider.sc.get("/groups/%d/users" % group.id)
-
-				for user in users:
-					u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, 
-						user.username, self.category + "/" + self.name)
-
-					u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
-					self.addChild(u)
-
-					logging.info("Successfully retrieved user data: id=%d; name=%s" % 
-						(u.getId(), user.permalink))
-
-			except Exception as e:
-				logging.warn("Unable to retrive data for groups: %s" % `e`)
+		self.children = children
 
 class Group(resource.DirectoryResource):
 
@@ -229,23 +196,38 @@ class Group(resource.DirectoryResource):
 		
 	def retriveChildren(self):
 
-		self.children = []
-		groupId = self.getId() - resource.ID_OFFSET
+		children = []
 
 		try:
+
+			if self.getId() == -1:
+				group = ResourceProvider.sc.get("/resolve", 
+							url="http://soundcloud.com/groups/%s" %
+							self.name)
+
+				self.id = group.id 
+				groupId = self.id
+			else:
+				groupId = self.getId() - resource.ID_OFFSET
+	
 			users = ResourceProvider.sc.get("/groups/%d/users" % groupId)
 
 			for user in users:
+
 				u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink, user.username, 
 						self.category + "/" + self.name)
+
 				u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})		
-				self.addChild(u)
+
+				children.append(u)
 
 				logging.info("Successfully retrieved user data: id=%d; name=%s" % 
 					(u.getId(), user.permalink))
 
 		except Exception as e:
 			logging.warn("Unable to retrive data for group %d: %s" % (groupId, `e`))
+
+		self.children = children
 
 class User(resource.DirectoryResource):
 
@@ -276,7 +258,7 @@ class User(resource.DirectoryResource):
 	
 	def retriveChildren(self):
 
-		self.children = []
+		children = []
 
 		try:
 
@@ -290,7 +272,7 @@ class User(resource.DirectoryResource):
 					"Title" : track.title, 
 					"Time" : track.duration})
 
-				self.addChild(tr)
+				children.append(tr)
 
 				logging.debug("Added track to user [%s]: %s" % (self.getName(), track.title))
 
@@ -298,7 +280,9 @@ class User(resource.DirectoryResource):
 
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
-		logging.info("Retrieved %d tracks for user [%s]" % (len(self.children), self.getName()))
+		logging.info("Retrieved %d tracks for user [%s]" % (len(children), self.getName()))
+
+		self.children = children
 
 class Track(resource.FileResource):
 
