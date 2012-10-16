@@ -38,6 +38,7 @@ class GstPlayer(resource.DirectoryResource):
 	playerStatus		= "stop"	
 	currentSongNumber 	= -1
 	currentSongId 		= -1
+	trackCache			= None
 
 	def __init__(self):	
 
@@ -49,6 +50,8 @@ class GstPlayer(resource.DirectoryResource):
 		self.bus.enable_sync_message_emission()
 		self.bus.add_signal_watch()
 		self.bus.connect('message::eos', self.onEos)
+
+		self.trackCache = {}
 
 	def addChild(self, child):
 
@@ -340,9 +343,21 @@ class GstPlayer(resource.DirectoryResource):
 		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
 		c = p.retrive(plName)
 			
-		if not c == None and makeCurrent:
-			self.children = c
-			self.playlistVersion = self.playlistVersion + 1
+		if not c == None:
+	
+			for t in c:
+
+				k = t.getMeta("file")
+
+				if not self.trackCache.has_key(k):
+					logging.debug("Adding to track cache: %s" % k)
+					self.trackCache[k] = t
+				else:
+					logging.debug("already in cache ..")
+
+			if makeCurrent:
+				self.children = c
+				self.playlistVersion = self.playlistVersion + 1
 
 		return c
 

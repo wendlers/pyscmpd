@@ -94,3 +94,27 @@ Resource (root)
    |
    +- Directory (soundcloud user)
 
+
+Persistent Playlists
+--------------------
+
+The current playlist is persisted automatically whenever the daemon receives the TERM signal.
+
+It is also possible to save the current playlist under a user defined name. However it is not
+guarntied, that sound-cloud queries deliver the same resultis between two calls for the same 
+resource. 
+
+E.g. if you added some favorite group "A" which contains more then the maximum amount of users
+the SoundCloud API is returning a more or less random set of users for that groups. 
+If now one addes some tracks lets say from user "U" to a playlist, and then comes back the other 
+day (starting the daemon freshly), it is very likely, that this time user "U" and its tracks are not 
+returned by the API query. Since MPD clients like ncmpcpp try to add songs from a user defined 
+playlist to the current playlist by using "addid" or "add" command, and supplying the path, 
+the daemon fails to find that track again from the query. 
+
+The workaround for this is, to put all tracks retrived from a playlist to a track cache. Since
+a track from a playlist contains all information needed to show it or play it, including its
+former path, every time the "addid" or "add" command is called, the daemon first looks if it
+findes the requested path in the cache. If so, the cached information is used instead of 
+querying it from SoundCloud. 
+

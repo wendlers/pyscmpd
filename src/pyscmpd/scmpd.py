@@ -167,7 +167,12 @@ class LsInfo(mpdserver.LsInfo):
 		if self.directory == None:
 			r = ScMpdServerDaemon.scroot
 		else:
-			r = ScMpdServerDaemon.scroot.getChildByPath(self.directory)
+			# see if we could retrive track from cache
+			if ScMpdServerDaemon.player.trackCache.has_key(self.directory):
+				logging.debug("Cache hit for: %s" % self.directory)
+				r = ScMpdServerDaemon.player.trackCache[self.directory] 
+			else:
+				r = ScMpdServerDaemon.scroot.getChildByPath(self.directory)
 
 		if r == None or not r.getType() == 1:
 			logging.warn("[%s] is not a directory" % r.getName())
@@ -232,7 +237,12 @@ class Add(mpdserver.Add):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		t = ScMpdServerDaemon.scroot.getChildByPath(song)
+		# see if we could retrive track from cache
+		if ScMpdServerDaemon.player.trackCache.has_key(song):
+			logging.debug("Cache hit for: %s" % song)
+			t = ScMpdServerDaemon.player.trackCache[song] 
+		else:
+			t = ScMpdServerDaemon.scroot.getChildByPath(song)
 
 		if t == None:
 			logging.error("Track [%s] not found in directory [%s]" % (track, user))
@@ -250,7 +260,12 @@ class AddId(mpdserver.AddId):
 
 		logging.info("Adding song [%s] to playlist" % song) 
 
-		t = ScMpdServerDaemon.scroot.getChildByPath(song)
+		# see if we could retrive track from cache
+		if ScMpdServerDaemon.player.trackCache.has_key(song):
+			logging.debug("Cache hit for: %s" % song)
+			t = ScMpdServerDaemon.player.trackCache[song] 
+		else:
+			t = ScMpdServerDaemon.scroot.getChildByPath(song)
 
 		if t == None:
 			logging.error("Track [%s] not found" % song)
