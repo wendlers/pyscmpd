@@ -379,3 +379,14 @@ class GstPlayer(resource.DirectoryResource):
 			logging.warn("Unable to retrive playlists: %s" % `e`)
 
 		return plFiles 
+
+	def removePlaylist(self, plName):
+
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		p.remove(plName)	
+
+	def renamePlaylist(self, plNameSrc, plNameDst):
+
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		p.rename(plNameSrc, plNameDst)
+

@@ -21,6 +21,7 @@
 This file is part of the pyscmpd project.
 '''
 
+import os
 import logging
 import pickle
 
@@ -67,4 +68,23 @@ class ResourceFilePersistence:
 				f.close()
 
 		return obj
+
+	def remove(self, key):
+
+		try:
+			
+			os.remove("%s/%s" % (self.baseDir, key))
+
+		except Exception as e:
+			logging.warn("Unable to remove playlist: %s" % `e`)
+
+	def rename(self, srcKey, dstKey):
+
+		try:
+			
+			os.rename("%s/%s" % (self.baseDir, srcKey), "%s/%s" % (self.baseDir, dstKey))
+
+		except Exception as e:
+			logging.warn("Unable to rename playlist: %s" % `e`)
+
 

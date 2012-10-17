@@ -64,6 +64,8 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(Save)
 		self.requestHandler.RegisterCommand(Load)
 		self.requestHandler.RegisterCommand(ListPlaylistInfo)
+		self.requestHandler.RegisterCommand(ListPlaylists)
+		self.requestHandler.RegisterCommand(Rm)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -175,7 +177,7 @@ class LsInfo(mpdserver.LsInfo):
 				r = ScMpdServerDaemon.scroot.getChildByPath(self.directory)
 
 		if r == None or not r.getType() == 1:
-			logging.warn("[%s] is not a directory" % r.getName())
+			logging.warn("[%s] is not a directory" % self.directory)
 			return i
 
 		# process 'directory'
@@ -230,6 +232,22 @@ class ListPlaylistInfo(mpdserver.ListPlaylistInfo):
 			pl.append(s)
 
 		return pl 
+
+class ListPlaylists(mpdserver.ListPlaylists):
+
+    def handle_playlists(self):
+        pass
+
+    def items(self):
+        return [("playlist",pl) for pl in ScMpdServerDaemon.player.listPlaylists()]
+
+class Rm(mpdserver.Rm):
+
+	def handle_args(self, playlistName):
+
+		logging.info("Deleting playlist: %s" % playlistName) 
+
+		ScMpdServerDaemon.player.removePlaylist(playlistName)
 
 class Add(mpdserver.Add):
 
