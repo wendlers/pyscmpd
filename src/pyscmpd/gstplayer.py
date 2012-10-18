@@ -325,12 +325,16 @@ class GstPlayer(resource.DirectoryResource):
 	def getVolume(self):
 		return int(self.player.get_property('volume') * 100)
 		
-	def storePlaylist(self, plName = CURR_PLAYLIST_KEY):
+	def storePlaylist(self, plName = CURR_PLAYLIST_KEY, playlist = None):
 
 		logging.info("Storing playlist with key: %s" % plName)
 		
 		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
-		p.store(plName, self.children)
+
+		if playlist == None:
+			p.store(plName, self.children)
+		else:
+			p.store(plName, playlist)
 
 	def retrivePlaylist(self, plName = CURR_PLAYLIST_KEY, makeCurrent = True):
 
@@ -390,3 +394,43 @@ class GstPlayer(resource.DirectoryResource):
 		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
 		p.rename(plNameSrc, plNameDst)
 
+	def playlistMove(self, plName, songId, songPos):
+
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		c = p.retrive(plName)
+			
+		if c == None:
+			loggin.warn("Unable to retrive playlist: %s" % plName)
+			return
+		
+		try:
+			s = c[songId]	
+				
+			c.remove(s)
+			c.insert(songPos, s)
+
+			p.store(plName, c)
+
+		except:
+			logging.warn("Unable to move song with ID %i to position %i in playlist: %s" % 
+				(songId, songPos, plName))
+
+	def playlistDelete(self, plName, songPos):
+
+		p = persist.ResourceFilePersistence(PLAYLIST_DIR)
+		c = p.retrive(plName)
+			
+		if c == None:
+			loggin.warn("Unable to retrive playlist: %s" % plName)
+			return
+		
+		try:
+				
+			s = c[songPos]	
+
+			c.remove(s)
+			p.store(plName, c)
+
+		except:
+			logging.warn("Unable to delete song at position %i in playlist: %s" % (songPos, plName))
+			

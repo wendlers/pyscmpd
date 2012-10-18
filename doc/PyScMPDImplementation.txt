@@ -71,9 +71,9 @@ listplaylistinfo    Yes                     Lists the songs with metadata in the
 listplaylists       No                      Prints a list of the playlist directory.
 load                Yes                     Loads the playlist into the current queue. 
 playlistadd         No                      Adds track to a playlist.
-playlistclear       No                      Clears a playlist.
-playlistdelete      No                      Delete track from playlist.
-playlistmove        No                      Move songe in playlist.
+playlistclear       Yes                     Clears a playlist.
+playlistdelete      Yes                     Delete track from playlist.
+playlistmove        Yes                     Move songe in playlist.
 rename              Yes                     Rename a playlist.
 rm                  Yes                     Remove a playlist.
 save                Yes                     Save a playlist.

@@ -206,6 +206,15 @@ class Save(Command):
 class Rm(Command):
     formatArg=[('playlistName',str)]
 
+class PlaylistClear(Command):
+    formatArg=[('playlistName',str)]
+
+class PlaylistMove(Command):
+    formatArg=[('playlistName',str), ('songId', int), ('songPos', int) ]
+
+class PlaylistDelete(Command):
+    formatArg=[('playlistName',str), ('songPos', int) ]
+
 class Rename(Command):
     formatArg=[('playlistName',str), ('playlistNameNew',str)]
 

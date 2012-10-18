@@ -67,6 +67,9 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(ListPlaylists)
 		self.requestHandler.RegisterCommand(Rm)
 		self.requestHandler.RegisterCommand(Rename)
+		self.requestHandler.RegisterCommand(PlaylistClear)
+		self.requestHandler.RegisterCommand(PlaylistMove)
+		self.requestHandler.RegisterCommand(PlaylistDelete)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -379,6 +382,21 @@ class Status(mpdserver.Status):
 
 		return self.helper_status_stop()
 
+class PlaylistClear(mpdserver.PlaylistClear):
+
+	def handle_args(self, playlistName):
+		ScMpdServerDaemon.player.storePlaylist(playlistName, [])
+
+class PlaylistMove(mpdserver.PlaylistMove):
+
+	def handle_args(self, playlistName, songId, songPos):
+		ScMpdServerDaemon.player.playlistMove(playlistName, songId, songPos)
+
+class PlaylistDelete(mpdserver.PlaylistDelete):
+
+	def handle_args(self, playlistName, songPos):
+		ScMpdServerDaemon.player.playlistDelete(playlistName, songPos)
+		
 class Save(mpdserver.Save):
 
 	def handle_args(self, playlistName):
