@@ -66,6 +66,7 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(ListPlaylistInfo)
 		self.requestHandler.RegisterCommand(ListPlaylists)
 		self.requestHandler.RegisterCommand(Rm)
+		self.requestHandler.RegisterCommand(Rename)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -248,6 +249,14 @@ class Rm(mpdserver.Rm):
 		logging.info("Deleting playlist: %s" % playlistName) 
 
 		ScMpdServerDaemon.player.removePlaylist(playlistName)
+
+class Rename(mpdserver.Rename):
+
+	def handle_args(self, playlistName, playlistNameNew):
+
+		logging.info("Renaming playlist: %s to %s" % (playlistName, playlistNameNew)) 
+
+		ScMpdServerDaemon.player.renamePlaylist(playlistName, playlistNameNew)
 
 class Add(mpdserver.Add):
 

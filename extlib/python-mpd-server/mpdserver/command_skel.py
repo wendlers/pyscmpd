@@ -199,11 +199,15 @@ class Load(Command):
     """ Load a playlist in current playlist. Songs are added to
     current playlist."""
     formatArg=[('playlistName',str)]
+
 class Save(Command):
     formatArg=[('playlistName',str)]
 
 class Rm(Command):
     formatArg=[('playlistName',str)]
+
+class Rename(Command):
+    formatArg=[('playlistName',str), ('playlistNameNew',str)]
 
 class Decoders(CommandItems):
 	def items(self):

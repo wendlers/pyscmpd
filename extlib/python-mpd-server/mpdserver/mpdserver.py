@@ -152,6 +152,7 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                          'save'             :{'class':None,'users':[],'group':'write','mpdVersion':"0.12",'neededBy':None},
                          'search'           :{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},
                          'rm'               :{'class':None,'users':[],'group':'write','mpdVersion':"0.12",'neededBy':None},
+                         'rename'           :{'class':None,'users':[],'group':'write','mpdVersion':"0.12",'neededBy':None},
                          'setvol'           :{'class':None,'users':[],'group':'control','mpdVersion':"0.12",'neededBy':None},
                          'decoders'         :{'class':Decoders,'users':['default'],'group':'reflection','mpdVersion':"0.12",'neededBy':None}
                          }
