@@ -218,6 +218,9 @@ class PlaylistDelete(Command):
 class Rename(Command):
     formatArg=[('playlistName',str), ('playlistNameNew',str)]
 
+class PlaylistAdd(Command):
+    formatArg=[('playlistName', str), ('song',str)]
+
 class Decoders(CommandItems):
 	def items(self):
 		return [('plugin','gstreamer'),                                      

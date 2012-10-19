@@ -151,6 +151,7 @@ class MpdRequestHandler(SocketServer.StreamRequestHandler):
                          'playlistclear'    :{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},
                          'playlistmove'    :{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},
                          'playlistdelete'   :{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},
+                         'playlistadd'   	:{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},
                          'load'             :{'class':None,'users':[],'group':'write','mpdVersion':"0.12",'neededBy':None},
                          'save'             :{'class':None,'users':[],'group':'write','mpdVersion':"0.12",'neededBy':None},
                          'search'           :{'class':None,'users':[],'group':'read','mpdVersion':"0.12",'neededBy':None},

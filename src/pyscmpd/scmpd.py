@@ -70,6 +70,7 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 		self.requestHandler.RegisterCommand(PlaylistClear)
 		self.requestHandler.RegisterCommand(PlaylistMove)
 		self.requestHandler.RegisterCommand(PlaylistDelete)
+		self.requestHandler.RegisterCommand(PlaylistAdd)
 
 		self.requestHandler.Playlist = MpdPlaylist
 
@@ -396,7 +397,36 @@ class PlaylistDelete(mpdserver.PlaylistDelete):
 
 	def handle_args(self, playlistName, songPos):
 		ScMpdServerDaemon.player.playlistDelete(playlistName, songPos)
+
+class PlaylistAdd(mpdserver.PlaylistAdd):
+
+	def handle_args(self, playlistName, song):
+		logging.info("Adding song [%s] to playlist [%s]" % (song, playlistName))
+
+		# see if we could retrive track from cache
+		if ScMpdServerDaemon.player.trackCache.has_key(song):
+			logging.debug("Cache hit for: %s" % song)
+			t = ScMpdServerDaemon.player.trackCache[song] 
+		else:
+			t = ScMpdServerDaemon.scroot.getChildByPath(song)
+
+		if t == None:
+			logging.error("Track [%s] not found" % song)
+			return
+
+		# get playlist
+		p = ScMpdServerDaemon.player.retrivePlaylist(playlistName, False)
+
+		if p == None:
+			logging.info("Playlist [%s] not found, creating new one" % playlistName)
+			p = []
+
+		# add song to playlist
+		p.append(t)
 		
+		# save playlist
+		ScMpdServerDaemon.player.storePlaylist(playlistName, p)
+
 class Save(mpdserver.Save):
 
 	def handle_args(self, playlistName):

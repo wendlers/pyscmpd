@@ -59,8 +59,8 @@ playlistid          No                      Displays a list of songs in the play
 playlistinfo        Yes (no ranges)         Displays a list of all songs in the playlist.
 playlistsearch      No                      Searches case-sensitively for partial matches in the 
                                             current playlist.
-plchanges           No                      Displays changed songs currently in the playlist.
-plchangesposid      No                      As above but only returns positions and ids.
+plchanges           Yes                     Displays changed songs currently in the playlist.
+plchangesposid      Yes                     As above but only returns positions and ids.
 prio                No                      Set the priority of the specified songs. 
 prioid              No                      Same as above but ueses ids.
 shuffle             No                      Shuffle the current playlist.
@@ -68,9 +68,9 @@ swap                No                      Swap two songs.
 swapid              No                      As above but ueses ids.
 listplaylist        Yes                     Lists the songs in the playlist.
 listplaylistinfo    Yes                     Lists the songs with metadata in the playlist.
-listplaylists       No                      Prints a list of the playlist directory.
+listplaylists       Yes                     Prints a list of the playlist directory.
 load                Yes                     Loads the playlist into the current queue. 
-playlistadd         No                      Adds track to a playlist.
+playlistadd         Yes                     Adds track to a playlist.
 playlistclear       Yes                     Clears a playlist.
 playlistdelete      Yes                     Delete track from playlist.
 playlistmove        Yes                     Move songe in playlist.
@@ -108,4 +108,51 @@ unsubscribe         No                      Unsubscribe from a channel.
 channels            No                      Obtain a list of all channels. 
 readmessages        No                      Reads messages for this client. 
 sendmessage         No                      Send a message to the specified channel.
+
+
+Song ID
+-------
+
+Each resource (song or directory) needs to have an ID which is stabel over time. This ID is passed
+to the MPD clients. In general every resource on SoundCloud has a stable ID too. Thus, this ID
+is used to be serverd to clients. However, "pyscmpd" inserts some artifical resources like "favorites",
+"groups" etc. To distinguish this categories from SoundCloud songs, ID_OFFSET (= 100000000) is added
+to each ID retrieved from SoundCloud. 
+
+
+moveId Workaround
+-----------------
+
+MPD defines two commands for changing the position of a song in the current playlist.
+
+* move:	takes the from and to position for a song within the playlist
+* moveId: takes the song ID and to tho position within the playlist
+
+For some reason, "ncmpcpp" calls "moveId" but does not provide a song ID as first parameter
+but a playlist position. To overcome this problem, it is checked if the provided song ID is
+smaller than ID_OFFEST (= 100000000), and if so, "move" is called instead of "moveId". 
+
+
+Persistent Playlists
+--------------------
+
+The current playlist is persisted automatically whenever the daemon receives the TERM signal.
+
+It is also possible to save the current playlist under a user defined name. However it is not
+guarntied, that sound-cloud queries deliver the same resultis between two calls for the same 
+resource. 
+
+E.g. if you added some favorite group "A" which contains more then the maximum amount of users
+the SoundCloud API is returning a more or less random set of users for that groups. 
+If now one addes some tracks lets say from user "U" to a playlist, and then comes back the other 
+day (starting the daemon freshly), it is very likely, that this time user "U" and its tracks are not 
+returned by the API query. Since MPD clients like ncmpcpp try to add songs from a user defined 
+playlist to the current playlist by using "addid" or "add" command, and supplying the path, 
+the daemon fails to find that track again from the query. 
+
+The workaround for this is, to put all tracks retrived from a playlist to a track cache. Since
+a track from a playlist contains all information needed to show it or play it, including its
+former path, every time the "addid" or "add" command is called, the daemon first looks if it
+findes the requested path in the cache. If so, the cached information is used instead of 
+querying it from SoundCloud. 
 
