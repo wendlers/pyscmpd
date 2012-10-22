@@ -52,6 +52,7 @@ class Root(resource.DirectoryResource):
 		self.__populateFavoriteUsers(favoriteUsers)
 		self.__populateFavoriteGroups(favoriteGroups)
 		self.__populateFavoriteFavorites(favoriteFavorites)
+		self.__populateRandom()
 
 	def __populateFavoriteUsers(self, favoriteUsers):
 
@@ -110,6 +111,15 @@ class Root(resource.DirectoryResource):
 
 		self.addChild(ffav)
 
+	def __populateRandom(self):
+
+		d = resource.DirectoryResource(0, "random", "random")
+		d.setMeta({"directory" : "random"})		
+		d.addChild(RandomGroups("random", "groups"))
+		d.addChild(RandomUsers("random", "users"))
+
+		self.addChild(d)
+
 class FavoriteUsers(resource.DirectoryResource):
 
 	retriveLock 	= None
@@ -164,6 +174,103 @@ class FavoriteUsers(resource.DirectoryResource):
 				logging.warn("Unable to retrive data for URI %s: %s" % (uname, `e`))
 
 		self.children = children
+
+class RandomGroups(resource.DirectoryResource):
+	
+	retriveLock = None
+	category    = None
+
+	def __init__(self, category, name):
+
+		resource.DirectoryResource.__init__(self, 0, category, name)
+
+		self.category    = category
+		self.children    = None
+		self.retriveLock = Lock()
+
+		self.setMeta({"directory" : self.category + "/" + name})
+
+	def getAllChildren(self):
+
+		self.retriveLock.acquire()
+
+		if self.children == None:
+			self.retriveChildren()
+
+		self.retriveLock.release()
+
+		return self.children
+
+	def retriveChildren(self):
+
+		self.children = []
+
+		try:
+
+			groups = ResourceProvider.sc.get("/groups")
+
+			for group in groups:
+				logging.info("processing group %s" % group.permalink)
+				g = Group(resource.ID_OFFSET + group.id, group.permalink, self.category + "/" + self.name)
+				g.setMeta({"directory" : self.category + "/" + self.name + "/" 
+					+ group.permalink})
+				self.addChild(g)
+
+				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
+					(group.uri, g.getId(), group.permalink))
+		except Exception as e:
+			logging.warn("Unable to retrive data for groups: %s" % `e`)
+
+class RandomUsers(resource.DirectoryResource):
+
+	category = None
+	retriveLock = None
+
+	def __init__(self, category, name):
+
+		resource.DirectoryResource.__init__(self, 0, category, name)
+
+		self.setMeta({"directory" : category + "/" + name})
+
+		self.category = category
+		self.children = None
+		self.retriveLock = Lock()
+
+	def getAllChildren(self):
+
+		self.retriveLock.acquire()
+
+		if self.children == None:
+			self.retriveChildren()
+
+		self.retriveLock.release()
+		return self.children
+
+	def retriveChildren(self):
+
+		self.children = []
+
+		try:
+			allUsers = ResourceProvider.sc.get("/users")
+
+			for user in allUsers:
+				
+				try:
+
+					u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink,
+						user.username, self.category + "/" + self.name)
+					u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})
+
+					self.addChild(u)
+
+					logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
+						(user.uri, u.getId(), user.permalink))
+
+				except Exception as e:
+					logging.warn("Unable to retrive data for user: %s" % `e`)
+
+		except Exception as e:
+			logging.warn("Unable to retrive data for URI users: %s" % `e`)
 
 class Group(resource.DirectoryResource):
 

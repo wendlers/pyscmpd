@@ -20,10 +20,12 @@ Main features currently supported:
 * Browse predefined set of favorite users  (see "~/.pyscmpd/pyscmpd.conf")
 * Browse predefined set of favorite groups (see "~/.pyscmpd/pyscmpd.conf")
 * Browse the favorite tracks of a predefined set of users (see "~/.pyscmpd/pyscmpd.conf")
+* BRowse random users/groups
 * Current playlist is persisted on SIGTERM and restored on next restart
-* Save current playlist to defined name (I needed to remove random-groups/users for this, since otherwise songs will not be found again)
-* Browse/Load playlists (only ncmpcpp yet, since sonata uses different command) 
+* Save current playlist to defined name 
+* Browse/Load playlists 
 * Add tracks to current play-list
+* Add tracks to named play-list
 * Play tracks from play-list
 * Change song order in current play-list
 * Remove songs from play-list
