@@ -17,24 +17,29 @@ NOTE: only basic MPD server daemon available yet
 
 Main features currently supported:
 
-* Browse predefined set of favorite users  (see "~/.pyscmpd/pyscmpd.conf")
-* Browse predefined set of favorite groups (see "~/.pyscmpd/pyscmpd.conf")
-* Browse the favorite tracks of a predefined set of users (see "~/.pyscmpd/pyscmpd.conf")
-* BRowse random users/groups
-* Current playlist is persisted on SIGTERM and restored on next restart
-* Save current playlist to defined name 
-* Browse/Load playlists 
+* Browse predefined set of favorite users  (in "~/.pyscmpd/pyscmpd.conf")
+* Browse predefined set of favorite groups (in "~/.pyscmpd/pyscmpd.conf")
+* Browse the favorite tracks of a predefined set of users (in "~/.pyscmpd/pyscmpd.conf")
+* Browse random users/groups
+* Current play-list is persisted on SIGTERM and restored on next restart
+* Save current play-list to defined name 
+* Browse/Load stored play-lists 
+* Delete stored play-lists
+* Clear stored play-lists
 * Add tracks to current play-list
 * Add tracks to named play-list
 * Play tracks from play-list
 * Change song order in current play-list
-* Remove songs from play-list
-* Clear whole play-list
+* Change song order in stored play-list
+* Remove songs from current play-list
+* Remove songs from stored play-list
+* Clear current play-list
 * Start/stop/pause/resume songs
 * Control volume
 * Elapsed song time and current song-time are transmitted to clients
 
 For a complete list of supported MPD commands see the [implementation docs] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt).
+
 
 Project Directory Layout
 ------------------------
@@ -64,12 +69,12 @@ For more detailed install instructions see next chapter.
 Quick Install Instructions
 --------------------------
 
-The following instructions describe in short, how to install "pyscmpd" on a raspberry pi
-with freshly installed raspian. For more detailed setup instructions see the next chapter.
+The following instructions describe in short, how to install "pyscmpd" on a Raspberry Pi
+with freshly installed Raspian. For more detailed setup instructions see the next chapter.
 
 __Note:__ perform the following steps as user "pi".
 
-*1) Install missing debian packages*
+*1) Install missing Debian packages*
 
 	sudo apt-get install git python-setuptools python-gst0.10 gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly gstreamer0.10-alsa jackd ncmpcpp
 
@@ -98,7 +103,7 @@ __Note:__ perform the following steps as user "pi".
 Detailed Install Instructions
 -----------------------------
 
-__On Debian Based Linux Systems (e.g. Ubuntu, Respian, ...)__
+__On Debian Based Linux Systems (e.g. Ubuntu, Raspian, ...)__
 
 For the following steps, it is assumed, that `$HOME/src`is your working directory:
 
@@ -128,7 +133,7 @@ apt-get the library:
 
 	sudo apt-get install python-gst0.10 
 
-on a fresh Respian, I needed additionally the following:
+on a fresh Raspian, I needed additionally the following:
 
 	sudo apt-get install gstreamer0.10-plugins-base gstreamer0.10-plugins-good gstreamer0.10-plugins-bad gstreamer0.10-plugins-ugly gstreamer0.10-alsa jackd 
 	
@@ -221,32 +226,32 @@ in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
 	category2: user1, user2, ...
 	...
 
-*categoryN* is then shown in the browser as subfolder folder of *users* folder, containing all 
+*categoryN* is then shown in the browser as sub-folder folder of *users* folder, containing all 
 the users specified. *userN* is the user name of a soundcloud user as shown in the URL. E.g. 
 "griz" for [GRiZ] (http://soundcloud.com/griz).
 
 __Favorite Groups__
 
-To define the favaorite groups shown in the browser, add them under the *[favorite-groups]* section
+To define the favorite groups shown in the browser, add them under the *[favorite-groups]* section
 in "~/.pyscmpd/pyscmp.conf". The format used for favorite users is:
 
 	categroy1: group1, group2, ...
 	categroy2: group1, group2, ...
 	...
 	
-*categoryN* is shown in the broser as subfolder of the *groups* folder. *groupN* is the group name as shown 
+*categoryN* is shown in the browser as sub-folder of the *groups* folder. *groupN* is the group name as shown 
 in the URL when browsing a group. E.g. "deep-house-4".
 
 __Favorite Favorites__
 
-To define a set of users whos favorite tracks are listed under the *favorites* folder, add them to the 
+To define a set of users who's favorite tracks are listed under the *favorites* folder, add them to the 
 *[favorite-favorites]* section in  "~/.pyscmpd/pyscmp.conf". The format used for favorite favorites is:
 
 	category1: user1, user2, ...
 	category2: user1, user2, ...
 	...
 	
-For each *categoryN*, a subfolder of *favorites* is shown in the browser. When *userN* is opened, all the favorite tracks of that user are listed.
+For each *categoryN*, a sub-folder of *favorites* is shown in the browser. When *userN* is opened, all the favorite tracks of that user are listed.
 	
 __Complete Example__
 

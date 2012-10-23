@@ -25,8 +25,8 @@ idle                No                      Waits until there is a noteworthy ch
 status              Yes                     Reports the current status of the player and the volume level.
 stats               No                      Displays statistics.
 consume             No         0.16         When consume is activated, each song played is 
-                                            removed from playlist.
-crossfade           No                      Sets crossfading between songs.
+                                            removed from play-list.
+crossfade           No                      Sets cross-fading between songs.
 mixrampdb           No                      Sets the threshold at which songs will be overlapped.
 mixrampdelay        No                      Additional time subtracted from the overlap calculated 
                                             by mixrampdb.	
@@ -37,56 +37,56 @@ single              No                      When single is activated, playback i
                                             current song.
 replay_gain_mode    No          0.16        Sets the replay gain mode.
 replay_gain_status  No          0.16        Prints replay gain options. 
-next                Yes                     Plays next song in the playlist.
+next                Yes                     Plays next song in the play-list.
 pause               Yes                     Toggles pause/resumes playing.
-play                Yes                     Begins playing the playlist at song number.
-playid              Yes                     Begins playing the playlist at song with id.
-previous            Yes                     Plays previous song in the playlist.
-seek                No                      Seeks to position of song nummber.
+play                Yes                     Begins playing the play-list at song number.
+playid              Yes                     Begins playing the play-list at song with id.
+previous            Yes                     Plays previous song in the play-list.
+seek                No                      Seeks to position of song number.
 seekid              No                      Seeks to position of song with id.
 seekcur             No                      Seeks to the position within the current song. 
 stop                Yes                     Stops playing.
-add                 Yes                     Adds the file URI to the playlist.
-addid               Yes                     Adds a song to the playlist and returns the song id.
-clear               Yes                     Clears the current playlist
-delete              Yes (no ranges)         Deletes a song from the playlist.
-deleteid            Yes                     Deletes a song from the playlist.
-move                Yes (no ranges)         Moves the song in the playlist.	
-moveid              Yes                     Moves the song in the playlist.
-playlist            No                      Displays the current playlist.
-playlistfind        No                      Finds songs in the current playlist with strict matching.
-playlistid          No                      Displays a list of songs in the playlist.
-playlistinfo        Yes (no ranges)         Displays a list of all songs in the playlist.
+add                 Yes                     Adds the file URI to the play-list.
+addid               Yes                     Adds a song to the play-list and returns the song id.
+clear               Yes                     Clears the current play-list
+delete              Yes (no ranges)         Deletes a song from the play-list.
+deleteid            Yes                     Deletes a song from the play-list.
+move                Yes (no ranges)         Moves the song in the play-list.	
+moveid              Yes                     Moves the song in the play-list.
+playlist            No                      Displays the current play-list.
+playlistfind        No                      Finds songs in the current play-list with strict matching.
+playlistid          No                      Displays a list of songs in the play-list.
+playlistinfo        Yes (no ranges)         Displays a list of all songs in the play-list.
 playlistsearch      No                      Searches case-sensitively for partial matches in the 
-                                            current playlist.
-plchanges           Yes                     Displays changed songs currently in the playlist.
+                                            current play-list.
+plchanges           Yes                     Displays changed songs currently in the play-list.
 plchangesposid      Yes                     As above but only returns positions and ids.
 prio                No                      Set the priority of the specified songs. 
-prioid              No                      Same as above but ueses ids.
-shuffle             No                      Shuffle the current playlist.
+prioid              No                      Same as above but uses ids.
+shuffle             No                      Shuffle the current play-list.
 swap                No                      Swap two songs.
-swapid              No                      As above but ueses ids.
-listplaylist        Yes                     Lists the songs in the playlist.
-listplaylistinfo    Yes                     Lists the songs with metadata in the playlist.
-listplaylists       Yes                     Prints a list of the playlist directory.
-load                Yes                     Loads the playlist into the current queue. 
-playlistadd         Yes                     Adds track to a playlist.
-playlistclear       Yes                     Clears a playlist.
-playlistdelete      Yes                     Delete track from playlist.
-playlistmove        Yes                     Move songe in playlist.
-rename              Yes                     Rename a playlist.
-rm                  Yes                     Remove a playlist.
-save                Yes                     Save a playlist.
+swapid              No                      As above but uses ids.
+listplaylist        Yes                     Lists the songs in the play-list.
+listplaylistinfo    Yes                     Lists the songs with meta-data in the play-list.
+listplaylists       Yes                     Prints a list of the play-list directory.
+load                Yes                     Loads the play-list into the current queue. 
+playlistadd         Yes                     Adds track to a play-list.
+playlistclear       Yes                     Clears a play-list.
+playlistdelete      Yes                     Delete track from play-list.
+playlistmove        Yes                     Move song in play-list.
+rename              Yes                     Rename a play-list.
+rm                  Yes                     Remove a play-list.
+save                Yes                     Save a play-list.
 count               No                      Counts the number of songs and their total playtime in the db.
 find                No                      Fins songs in the db.
-findadd             No                      Find songs in the db, add to playlist.
+findadd             No                      Find songs in the db, add to play-list.
 list                No                      Lists all tags of the specified type.
 listall             No                      Lists all songs and directories in URI.
 listallinfo         No                      Same as above but lists full info.
 lsinfo              Yes                     Lists the contents of the directory URI.
 search              No                      Same as find but case insensitive
 searchadd           No                      Same as findadd but case insensitive
-searchaddpl         No                      Same as above but adds to named playlist.
+searchaddpl         No                      Same as above but adds to named play-list.
 update              No                      Updates the music database.
 rescan              No                      Same as update, but also rescans unmodified files.
 sticker             No                      Pieces of information attached to existing MPD objects.
@@ -100,9 +100,9 @@ outputs             Yes                     Shows information about all outputs.
 config              No                      Dumps configuration values.
 commands            No                      Shows which commands the current user has access to.
 notcommands         Yes                     Shows which commands the current user does not have access to.
-tagtypes            No                      Shows a list of available song metadata.
+tagtypes            No                      Shows a list of available song meta-data.
 urlhandlers         No                      Gets a list of available URL handlers.
-decoders            Yes                     Print a list of decoder plugins.
+decoders            Yes                     Print a list of decoder plug-ins.
 subscribe           No                      Subscribe to a channel.
 unsubscribe         No                      Unsubscribe from a channel.
 channels            No                      Obtain a list of all channels. 
@@ -110,12 +110,62 @@ readmessages        No                      Reads messages for this client.
 sendmessage         No                      Send a message to the specified channel.
 
 
+Tested Clients
+--------------
+
+The following table shows the general function blocks the "pyscmpd" server provides, and with
+which clients they are tested, and what where the results so far.
+
+Functionality               Client            	 Status
+-----------------------------------------------------------------------------------------------------------
+Basic song playing			sonata 1.6.2.1       Fully working	
+(start/stop/resume)
+                            ncmpcpp 0.5.6        Fully working
+
+Advanced song playing       sonata 1.6.2.1       Not working (not implemented in pyscmpd) 
+(seek, random etc.)
+                            ncmpcpp 0.5.6        Not working (not implemented in pyscmpd)
+
+Queue management            sonata 1.6.2.1       Fully working
+(current play-list)
+                            ncmpcpp 0.5.6        Fully working
+
+Playlist management         sonata 1.6.2.1       Fully working
+
+                            ncmpcpp 0.5.6        Fully working
+
+Tagging                     sonata 1.6.2.1       Not supported by sonata, not implemented in pyscmpd
+(stickers)
+                            ncmpcpp 0.5.6        Not working (not implemented in pyscmpd)
+
+DB querying                  sonata 1.6.2.1       Not working (not implemented in pyscmpd)
+(search, find etc.)         
+                            ncmpcpp 0.5.6        Not working (not implemented in pyscmpd)
+
+Client messaging            sonata 1.6.2.1       Not supported by sonata, not implemented in pyscmpd
+
+                            ncmpcpp 0.5.6        Not supported by sonata, not implemented in pyscmpd
+
+
+MPD Server Foundation
+---------------------
+
+As a foundation for the core MPD protocol implementation, the [pympdserver] 
+(http://pympdserver.tuxfamily.org/index.html) library is used. 
+
+This library provides a basic framwork for implementing commands served to clients through
+the MPD protocol. In general one could provide its own implementation for commands outside
+the library, but since the set of commands supported in general is defined within the library,
+and the library does not provide all the commands needed e.g. by "ncmpcpp", the whole library
+is inclueded as source in this project, and extended where needed.
+
+
 Song ID
 -------
 
-Each resource (song or directory) needs to have an ID which is stabel over time. This ID is passed
+Each resource (song or directory) needs to have an ID which is stable over time. This ID is passed
 to the MPD clients. In general every resource on SoundCloud has a stable ID too. Thus, this ID
-is used to be serverd to clients. However, "pyscmpd" inserts some artifical resources like "favorites",
+is used to be served to clients. However, "pyscmpd" inserts some artificial resources like "favorites",
 "groups" etc. To distinguish this categories from SoundCloud songs, ID_OFFSET (= 100000000) is added
 to each ID retrieved from SoundCloud. 
 
@@ -123,36 +173,36 @@ to each ID retrieved from SoundCloud.
 moveId Workaround
 -----------------
 
-MPD defines two commands for changing the position of a song in the current playlist.
+MPD defines two commands for changing the position of a song in the current play-list.
 
-* move:	takes the from and to position for a song within the playlist
-* moveId: takes the song ID and to tho position within the playlist
+* move:	takes the from and to position for a song within the play-list
+* moveId: takes the song ID and to tho position within the play-list
 
 For some reason, "ncmpcpp" calls "moveId" but does not provide a song ID as first parameter
-but a playlist position. To overcome this problem, it is checked if the provided song ID is
+but a play-list position. To overcome this problem, it is checked if the provided song ID is
 smaller than ID_OFFEST (= 100000000), and if so, "move" is called instead of "moveId". 
 
 
-Persistent Playlists
+Persistent Play-lists
 --------------------
 
-The current playlist is persisted automatically whenever the daemon receives the TERM signal.
+The current play-list is persisted automatically whenever the daemon receives the TERM signal.
 
-It is also possible to save the current playlist under a user defined name. However it is not
-guarntied, that sound-cloud queries deliver the same resultis between two calls for the same 
+It is also possible to save the current play-list under a user defined name. However it is not
+guarantied, that sound-cloud queries deliver the same results between two calls for the same 
 resource. 
 
 E.g. if you added some favorite group "A" which contains more then the maximum amount of users
 the SoundCloud API is returning a more or less random set of users for that groups. 
-If now one addes some tracks lets say from user "U" to a playlist, and then comes back the other 
+If now one adds some tracks lets say from user "U" to a play-list, and then comes back the other 
 day (starting the daemon freshly), it is very likely, that this time user "U" and its tracks are not 
 returned by the API query. Since MPD clients like ncmpcpp try to add songs from a user defined 
-playlist to the current playlist by using "addid" or "add" command, and supplying the path, 
+play-list to the current play-list by using "addid" or "add" command, and supplying the path, 
 the daemon fails to find that track again from the query. 
 
-The workaround for this is, to put all tracks retrived from a playlist to a track cache. Since
-a track from a playlist contains all information needed to show it or play it, including its
+The workaround for this is, to put all tracks retrieved from a play-list to a track cache. Since
+a track from a play-list contains all information needed to show it or play it, including its
 former path, every time the "addid" or "add" command is called, the daemon first looks if it
-findes the requested path in the cache. If so, the cached information is used instead of 
+finds the requested path in the cache. If so, the cached information is used instead of 
 querying it from SoundCloud. 
 
