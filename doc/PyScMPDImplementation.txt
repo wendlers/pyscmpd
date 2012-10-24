@@ -160,6 +160,14 @@ and the library does not provide all the commands needed e.g. by "ncmpcpp", the 
 is inclueded as source in this project, and extended where needed.
 
 
+MPD Version
+-----------
+
+I found no easy way to tell which MPD command was introduced with wich MPD version. Thus, 
+I just don't know which MPD version pyscmpd reassembles at the end. Thus, "MPD 0.13.0" is
+returned as defined in the pympdserver library.
+
+
 Song ID
 -------
 

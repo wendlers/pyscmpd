@@ -9,26 +9,45 @@ http://gpio.kaltpost.de/
 Introduction
 ------------
 
-Python based sound-cloud music server talking the [MPD] (http://www.musicpd.org/doc/protocol/) protocol.
+*pyscmpd* stands for "Python SoundCloud Music Player Daemon". It is, as the name suggests, 
+a Python based daemon, talking a subset of the [MPD] (http://www.musicpd.org/doc/protocol/) 
+protocol. Instead of serving local MP3 files, it connects to [SoundCloud] (http://www.soundcloud.com)
+and serves the streams found there. The user could configure, which parts of SoundCloud are
+made available for browsing (e.g. by defining favorite groups or user). *pyscmpd* is intended to
+run as a per user daemon, meaning it is designed to run multiple instances. 
+
+Since *pyscmpd* uses the well known MPD protocol, a variety of 
+[clients] (http://mpd.wikia.com/wiki/Clients) could be used as
+a front end to the daemon. The once I am testing *pyscmpd* currently on are the 
+curses based [ncmpcpp] (http://ncmpcpp.rybczak.net/) and the GTK based  
+[sonata] (http://sonata.berlios.de/).
+
+More information could be found at the following places:
+
+* For more details on the architecture of *pyscmpd* see this [document] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDArchitecture.txt). 
+
+* For more details on the current implementation (including a list of MPD commands currently supported) see this [document] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt). 
+
+* As a foundation for the core MPD protocol implementation, the [pympdserver] (http://pympdserver.tuxfamily.org/index.html) library is used. 
 
 
-NOTE: only basic MPD server daemon available yet
-------------------------------------------------
+Main Features
+-------------
 
-Main features currently supported:
+The main features currently supported are:
 
-* Browse predefined set of favorite users  (in "~/.pyscmpd/pyscmpd.conf")
-* Browse predefined set of favorite groups (in "~/.pyscmpd/pyscmpd.conf")
+* Browse a predefined set of favorite users  (in "~/.pyscmpd/pyscmpd.conf")
+* Browse a predefined set of favorite groups (in "~/.pyscmpd/pyscmpd.conf")
 * Browse the favorite tracks of a predefined set of users (in "~/.pyscmpd/pyscmpd.conf")
 * Browse random users/groups
 * Current play-list is persisted on SIGTERM and restored on next restart
-* Save current play-list to defined name 
-* Browse/Load stored play-lists 
+* Save play-lists to a defined name 
+* Load stored play-lists 
+* Browse stored play-lists 
 * Delete stored play-lists
 * Clear stored play-lists
 * Add tracks to current play-list
-* Add tracks to named play-list
-* Play tracks from play-list
+* Add tracks to stored play-list
 * Change song order in current play-list
 * Change song order in stored play-list
 * Remove songs from current play-list
@@ -37,8 +56,6 @@ Main features currently supported:
 * Start/stop/pause/resume songs
 * Control volume
 * Elapsed song time and current song-time are transmitted to clients
-
-For a complete list of supported MPD commands see the [implementation docs] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt).
 
 
 Project Directory Layout
