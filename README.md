@@ -27,6 +27,7 @@ More information could be found at the following places:
 * For more details on the architecture of *pyscmpd* see this [document] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDArchitecture.txt). 
 * For more details on the current implementation (including a list of MPD commands currently supported) see this [document] (https://github.com/wendlers/pyscmpd/blob/master/doc/PyScMPDImplementation.txt). 
 * As a foundation for the core MPD protocol implementation, the [pympdserver] (http://pympdserver.tuxfamily.org/index.html) library is used. 
+* Accessing SoundCloud is done through the [SoundCloud API] (http://developers.soundcloud.com/docs).
 
 
 Main Features
