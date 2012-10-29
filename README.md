@@ -233,6 +233,20 @@ By doing so, log messages are printed to "stdout", while the log-file specified 
 Customize
 ---------
 
+__General ScoundCloud API Settings__
+
+The general SoundCloud API settings are done under the *[scapi]* section. Currently the only
+thing configurable here is the number of items (groups, users, tracks) to retrive from SC
+per request. The maximum number one could specify for "maxitems" is 8000 (this is the upper
+limmit of SC):
+
+	[scapi]
+	maxitems=400
+
+Note: if you use a slow internet connection, it is likely that your clients time out when 
+maxitems is choosen to high.
+
+
 __Favorite Users__
 
 To modify the list of your favorite users to browse, edit the *[favorite-users]* section 

@@ -50,6 +50,8 @@ def prepare():
 		f.write("\n[logging]\n")
 		f.write("level=info\n")
 		f.write("file=%s\n" % DEF_LOG_FILE) 
+		f.write("\n[scapi]\n")
+		f.write("maxitems=1000\n")
 		f.write("\n[favorite-users]\n")
 		f.write("electroswing : maddecent, barelylegit\n")
 		f.write("electrosoul: griz\n")

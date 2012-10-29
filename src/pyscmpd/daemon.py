@@ -45,6 +45,7 @@ class PyScMpd:
 	mpd 			= None
 	mainloop 		= None
 	port			= 9900
+	maxitems		= 200
 
 	favoriteUsers		= None 
 	favoriteGroups		= None 
@@ -225,6 +226,11 @@ class PyScMpd:
 					
 					sys.stdout.write("Logging to file: %s\n" % logFile)
 
+			if parser.has_section("scapi"):
+
+				if parser.has_option("scapi", "maxitems"):
+					self.maxitems = parser.getint("scapi", "maxitems")	
+	
 			if parser.has_section("favorite-users"):
 		
 				for category, values in parser.items("favorite-users"):
@@ -270,7 +276,7 @@ class PyScMpd:
 
 		logging.info("pyscmpd v%s started" % PYSCMPD_VERSION)
 		self.mpd = scmpd.ScMpdServerDaemon(self.favoriteUsers, self.favoriteGroups, 
-			self.favoriteFavorites, self.port)
+			self.favoriteFavorites, self.port, self.maxitems)
 
 		self.mainloop = gobject.MainLoop()
 		self.mainloop.run()

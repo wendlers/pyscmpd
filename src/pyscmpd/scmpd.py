@@ -35,12 +35,14 @@ class ScMpdServerDaemon(mpdserver.MpdServerDaemon):
 	scroot  = None
 	player	= None
  
-	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites, serverPort = 9900):
+	def __init__(self, favoriteUsers, favoriteGroups, favoriteFavorites, serverPort = 9900, maxitems = 200):
 		
 		ScMpdServerDaemon.player = gstplayer.GstPlayer() 
 		ScMpdServerDaemon.player.retrivePlaylist()
 
-		ScMpdServerDaemon.scp = provider.ResourceProvider(favoriteUsers, favoriteGroups, favoriteFavorites)
+		ScMpdServerDaemon.scp = provider.ResourceProvider(favoriteUsers, favoriteGroups, 
+										favoriteFavorites, maxitems)
+
 		ScMpdServerDaemon.scroot = ScMpdServerDaemon.scp.getRoot()
 
 		mpdserver.MpdServerDaemon.__init__(self, serverPort)
