@@ -236,15 +236,15 @@ Customize
 __General ScoundCloud API Settings__
 
 The general SoundCloud API settings are done under the *[scapi]* section. Currently the only
-thing configurable here is the number of items (groups, users, tracks) to retrive from SC
+thing configurable here is the number of items (groups, users, tracks) to retrieve from SC
 per request. The maximum number one could specify for "maxitems" is 8000 (this is the upper
-limmit of SC):
+limit of SC):
 
 	[scapi]
 	maxitems=400
 
-Note: if you use a slow internet connection, it is likely that your clients time out when 
-maxitems is choosen to high.
+Note: if you use a slow Internet connection, it is likely that your clients time out when 
+maxitems is chosen to high.
 
 
 __Favorite Users__
