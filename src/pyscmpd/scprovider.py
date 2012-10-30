@@ -215,6 +215,7 @@ class RandomGroups(resource.DirectoryResource):
 
 		try:
 
+			'''
 			lim = ResourceProvider.reqLimit
 			off = 0
 
@@ -225,26 +226,33 @@ class RandomGroups(resource.DirectoryResource):
 
 				if len(groups) == 0:
 					break
+			'''
+			groups = ResourceProvider.sc.get("/groups", limit=ResourceProvider.reqLimit)
 
-				for group in groups:
+			for group in groups:
 
-					logging.info("processing group %s" % group.permalink)
+				logging.info("processing group %s" % group.permalink)
 
-					g = Group(resource.ID_OFFSET + group.id, group.permalink, 
-							self.category + "/" + self.name)
-					g.setMeta({"directory" : self.category + "/" + self.name + "/" 
-						+ group.permalink})
-					self.addChild(g)
+				g = Group(resource.ID_OFFSET + group.id, group.permalink, 
+						self.category + "/" + self.name)
+				g.setMeta({"directory" : self.category + "/" + self.name + "/" 
+					+ group.permalink})
+				self.addChild(g)
 
-					logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
-						(group.uri, g.getId(), group.permalink))
-
-				off = off + lim
+				logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
+					(group.uri, g.getId(), group.permalink))
+		
+			'''
+				if len(groups) < lim:
+					break
+				else:
+					off = off + lim
 
 				if off >= ResourceProvider.reqMaxitems:
 					logging.info("Maximum request offset exceeded limit of %d. Ending this request." % 
 						ResourceProvider.reqMaxitems)
 					break
+			'''
 
 		except Exception as e:
 			logging.warn("Unable to retrive data for groups: %s" % `e`)
@@ -280,6 +288,7 @@ class RandomUsers(resource.DirectoryResource):
 
 		try:
 
+			'''
 			lim = ResourceProvider.reqLimit
 			off = 0
 
@@ -287,34 +296,38 @@ class RandomUsers(resource.DirectoryResource):
 
 				logging.info("Requesting page with limit=%d; offset=%d" % (lim, off))
 
-				allUsers = ResourceProvider.sc.get("/users", limit=lim, offset=off)
 
 				if len(allUsers) == 0:
 					break
+			'''
+			allUsers = ResourceProvider.sc.get("/users", limit=ResourceProvider.reqLimit)
+			for user in allUsers:
+				
+				try:
 
-				for user in allUsers:
-					
-					try:
+					u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink,
+						user.username, self.category + "/" + self.name)
+					u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})
 
-						u = User(resource.ID_OFFSET + user.id, user.uri + "/tracks", user.permalink,
-							user.username, self.category + "/" + self.name)
-						u.setMeta({"directory" : self.category + "/" + self.name + "/" + user.permalink})
+					self.addChild(u)
 
-						self.addChild(u)
+					logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
+						(user.uri, u.getId(), user.permalink))
 
-						logging.info("successfully retrieved data for URI %s: id=%d; name=%s" %
-							(user.uri, u.getId(), user.permalink))
+				except Exception as e:
+					logging.warn("Unable to retrive data for user: %s" % `e`)
 
-					except Exception as e:
-						logging.warn("Unable to retrive data for user: %s" % `e`)
-
-				off = off + lim
+				'''
+				if len(allUsers) < lim:
+					break
+				else:
+					off = off + lim
 
 				if off >= ResourceProvider.reqMaxitems:
 					logging.info("Maximum request offset exceeded limit of %d. Ending this request." % 
 						ResourceProvider.reqMaxitems)
 					break
-
+				'''
 		except Exception as e:
 			logging.warn("Unable to retrive data for URI users: %s" % `e`)
 
@@ -387,7 +400,10 @@ class Group(resource.DirectoryResource):
 					logging.info("Successfully retrieved user data: id=%d; name=%s" % 
 						(u.getId(), user.permalink))
 
-				off = off + lim
+				if len(users) < lim:
+					break
+				else:
+					off = off + lim
 
 				if off >= ResourceProvider.reqMaxitems:
 					logging.info("Maximum request offset exceeded limit of %d. Ending this request." % 
@@ -445,26 +461,34 @@ class User(resource.DirectoryResource):
 					break
 
 				for track in tracks:
-					tr = Track(resource.ID_OFFSET + track.id, track.stream_url, track.permalink)
-					tr.setMeta({
-						"file" : self.category + "/" + self.name + "/" + track.permalink,
-						"Artist" : self.artist, 
-						"Title" : track.title, 
-						"Time" : track.duration})
 
-					children.append(tr)
+					try:
 
-					logging.debug("Added track to user [%s]: %s" % (self.getName(), track.title))
+						tr = Track(resource.ID_OFFSET + track.id, track.stream_url, track.permalink)
+						tr.setMeta({
+							"file" : self.category + "/" + self.name + "/" + track.permalink,
+							"Artist" : self.artist, 
+							"Title" : track.title, 
+							"Time" : track.duration})
 
-				off = off + lim
+						children.append(tr)
+
+						logging.debug("Added track to user [%s]: %s" % (self.getName(), track.title))
+
+					except:
+						logging.warn("Unable to add track (no stream URL): %s" % track.title)
+
+				if len(tracks) < lim:
+					break
+				else:
+					off = off + lim
 
 				if off >= ResourceProvider.reqMaxitems:
 					logging.info("Maximum request offset exceeded limit of %d. Ending this request." % 
 						ResourceProvider.reqMaxitems)
 					break
 
-		except Exception as e:
-
+		except:
 			logging.warn("Unable to retrive tracks for [%s]" % self.getName())
 	
 		logging.info("Retrieved %d tracks for user [%s]" % (len(children), self.getName()))
@@ -478,4 +502,3 @@ class Track(resource.FileResource):
 		stream_url = ResourceProvider.sc.get(self.location, allow_redirects=False)
 		logging.debug("Stream url for URI %s is %s" % (self.location, stream_url.location))
 		return stream_url.location
-
